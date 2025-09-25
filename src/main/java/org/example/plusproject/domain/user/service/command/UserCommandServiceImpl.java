@@ -1,4 +1,4 @@
-package org.example.plusproject.domain.user.service;
+package org.example.plusproject.domain.user.service.command;
 
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.domain.user.entity.User;
@@ -6,14 +6,14 @@ import org.example.plusproject.domain.user.repository.UserRepository;
 import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.example.plusproject.domain.user.enums.Role; // Added import
+import org.example.plusproject.domain.user.enums.Role;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserCommandServiceImpl implements UserCommandService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

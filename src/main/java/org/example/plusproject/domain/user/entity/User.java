@@ -2,7 +2,7 @@ package org.example.plusproject.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.example.plusproject.common.entity.BaseEntity;
+import org.example.plusproject.common.entity.BaseRemovableEntity;
 import org.example.plusproject.domain.user.enums.Role;
 
 @Entity

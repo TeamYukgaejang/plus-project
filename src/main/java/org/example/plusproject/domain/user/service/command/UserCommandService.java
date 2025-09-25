@@ -1,9 +1,9 @@
-package org.example.plusproject.domain.user.service;
+package org.example.plusproject.domain.user.service.command;
 
 import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
 import org.example.plusproject.domain.user.entity.User;
 
-public interface UserService {
+public interface UserCommandService { // Renamed
     /**
      * 회원가입
      * @param requestDto 회원가입 요청 정보
