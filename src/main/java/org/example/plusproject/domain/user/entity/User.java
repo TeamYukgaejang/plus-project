@@ -9,7 +9,7 @@ import org.example.plusproject.domain.user.enums.Role;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class User extends BaseEntity {
+public class User extends BaseRemovableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
