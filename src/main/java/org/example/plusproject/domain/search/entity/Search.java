@@ -1,4 +1,4 @@
-package com.project.search.entity;
+package org.example.plusproject.domain.search.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
