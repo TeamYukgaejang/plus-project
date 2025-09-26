@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(GlobalException.class)
-    public ResponseEntity<ApiResponse<Object>> handleGlobalException(GlobalException ex) {
-        log.error("비즈니스 오류 발생 ", ex);
-        return handleExceptionInternal(ex.getErrorCode());
+    public ResponseEntity<ApiResponse<Object>> handleGlobalException(GlobalException e) {
+        log.error("비즈니스 오류 발생 ", e);
+        return handleExceptionInternal(e.getErrorCode());
     }
 
     private ResponseEntity<ApiResponse<Object>> handleExceptionInternal(ErrorCode errorCode) {
         return ResponseEntity
                 .status(errorCode.getHttpStatus())
-                .body(ApiResponse.error(errorCode));
+                .body(ApiResponse.of(errorCode, null));
     }
 }
