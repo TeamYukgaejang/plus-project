@@ -1,11 +1,7 @@
 package org.example.plusproject.common.dto.response;
 
 import lombok.Getter;
-import org.example.plusproject.common.consts.ErrorCode;
 import org.example.plusproject.common.consts.SuccessCode;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import java.time.LocalDateTime;
 
 @Getter
