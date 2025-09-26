@@ -1,17 +1,17 @@
 package org.example.plusproject.domain.review.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
-import org.example.plusproject.common.entity.BaseEntity;
+import org.example.plusproject.common.entity.BaseRemovableEntity;
+import org.example.plusproject.domain.product.entity.Product;
+import org.example.plusproject.domain.user.entity.User;
 
 @Entity
 @Getter
+@Table(name = "reviews")
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Review extends BaseEntity {
+public class Review extends BaseRemovableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +20,12 @@ public class Review extends BaseEntity {
     private String content;
 
     private int point;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Product product;
 
     @Builder
     private Review(String content, int point) {
