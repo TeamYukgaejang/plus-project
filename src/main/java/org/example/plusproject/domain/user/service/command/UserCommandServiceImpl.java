@@ -55,14 +55,10 @@ public class UserCommandServiceImpl implements UserCommandService {
         String email = requestDto.getEmail();
         String password = requestDto.getPassword();
 
-        // 사용자 확인
-        User user = userRepository.findByEmail(email).orElseThrow(
-            () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
-        );
+        User user = userRepository.findByEmail(email).orElse(null);
 
-        // 비밀번호 확인
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
         // JWT 생성 및 반환
