@@ -26,7 +26,7 @@ public class SearchController {
     private final SearchCommandService searchCommandService;
 
     // v1 검색 조회
-    @GetMapping("/v1/products/search")
+    @GetMapping("/v1/search")
     public ResponseEntity<ApiResponse<PageResponse<ProductSearchResponse>>> searchProductsV1(
             @RequestParam String keyword,
             Pageable pageable
@@ -37,8 +37,10 @@ public class SearchController {
     }
 
     // 인기 검색어 조회
-    @GetMapping("/search/popular")
-    public ResponseEntity<ApiResponse<List<TrendingKeywordResponse>>> getPopularKeywords() {
+    @GetMapping("/v2/search/popular")
+    public ResponseEntity<ApiResponse<List<TrendingKeywordResponse>>> getPopularKeywords(
+            @RequestParam(defaultValue = "10") int limit
+    ) {
         return ApiResponse.success(searchQueryService.getPopularKeywords(), "인기 검색어 조회 성공");
     }
 }
