@@ -42,12 +42,13 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String email, Role role) {
+    public String createToken(Long userId, String email, Role role) {
         Date date = new Date();
 
         return BEARER_PREFIX +
             Jwts.builder()
-                .subject(email) // 사용자 식별자값(ID)
+                .subject(String.valueOf(userId)) // 사용자 식별자값(ID)
+                .claim("email", email)
                 .claim(AUTHORIZATION_KEY, role) // 사용자 권한
                 .expiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
                 .issuedAt(date) // 발급일
