@@ -3,6 +3,7 @@ spring:
     url: jdbc:mysql://localhost:3306/${DB_NAME}
     username: ${USER_NAME}
     password: ${PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: create
@@ -10,3 +11,7 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
