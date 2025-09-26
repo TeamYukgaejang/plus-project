@@ -17,7 +17,7 @@ public class SearchKeyword extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false,unique = true, length = 100)
     private String keyword;
 
     @Column(nullable = false)
@@ -27,7 +27,7 @@ public class SearchKeyword extends BaseEntity {
     private LocalDateTime lastSearchedAt;
 
     public static SearchKeyword of(String keyword) {
-        return new SearchKeyword(null, keyword, 0, LocalDateTime.now());
+        return new SearchKeyword(null, keyword, 1, LocalDateTime.now());
     }
 
     public void increaseCount() {

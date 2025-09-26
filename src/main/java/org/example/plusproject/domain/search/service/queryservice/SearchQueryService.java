@@ -28,18 +28,13 @@ public class SearchQueryService {
         Page<ProductSearchResponse> results = productRepository.findByNameContaining(keyword, pageable)
                 .map(ProductSearchResponse::from);
 
-        if (results.isEmpty()) {
-            throw new SearchException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
-        }
         return results;
     }
 
     // 인기 검색어
     public List<TrendingKeywordResponse> getPopularKeywords() {
-        return searchKeywordRepository.findAll()
+        return searchKeywordRepository.findTop10ByOrderByCountDesc()
                 .stream()
-                .sorted((a, b) -> Integer.compare(b.getCount(), a.getCount()))
-                .limit(10)
                 .map(k -> TrendingKeywordResponse.builder()
                         .keyword(k.getKeyword())
                         .count(k.getCount())
