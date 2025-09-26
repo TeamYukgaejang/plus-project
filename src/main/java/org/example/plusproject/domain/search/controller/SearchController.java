@@ -26,7 +26,7 @@ public class SearchController {
     private final SearchCommandService searchCommandService;
 
     // v1 검색 조회
-    @GetMapping("/api/v1/search")
+    @GetMapping("/v1/search")
     public ApiResponse<PageResponse<ProductSearchResponse>> searchProductsV1(
             @RequestParam String keyword,
             Pageable pageable
@@ -37,7 +37,7 @@ public class SearchController {
     }
 
     // 인기 검색어 조회
-    @GetMapping("/api/v2/search/trending")
+    @GetMapping("/v2/search/trending")
     public ApiResponse<List<TrendingKeywordResponse>> getTrendingKeywords() {
         return ApiResponse.of(
                 SuccessCode.SEARCH_TRENDING_SUCCESS,
