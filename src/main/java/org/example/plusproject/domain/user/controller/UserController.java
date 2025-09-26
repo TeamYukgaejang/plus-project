@@ -18,19 +18,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserCommandService userCommandService;
 
-    @PostMapping("/signup")
+    @PostMapping("/auth/signup")
     public ResponseEntity<ApiResponse<SignUpResponseDto>> signUp(@Valid @RequestBody SignUpRequestDto requestDto) {
         ApiResponse<SignUpResponseDto> response = userCommandService.signUp(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<ApiResponse<Void>> login(@Valid @RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
         String token = userCommandService.login(requestDto);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
