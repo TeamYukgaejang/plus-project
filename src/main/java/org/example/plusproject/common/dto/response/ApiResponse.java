@@ -1,6 +1,7 @@
 package org.example.plusproject.common.dto.response;
 
 import lombok.Getter;
+import org.example.plusproject.common.consts.ErrorCode;
 import org.example.plusproject.common.consts.SuccessCode;
 import java.time.LocalDateTime;
 
@@ -27,7 +28,7 @@ public class ApiResponse<T> {
         );
     }
 
-    public static <T> ApiResponse<T> of(Error code, T data) {
+    public static <T> ApiResponse<T> of(ErrorCode code, T data) {
         return new ApiResponse<>(
                 false,
                 code.getMessage(),
