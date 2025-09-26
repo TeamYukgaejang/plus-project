@@ -1,6 +1,8 @@
 package org.example.plusproject.domain.user.service.command;
 
 import lombok.RequiredArgsConstructor;
+import org.example.plusproject.common.jwt.JwtUtil;
+import org.example.plusproject.domain.user.dto.request.LoginRequestDto;
 import org.example.plusproject.domain.user.dto.response.SignUpResponseDto;
 import org.example.plusproject.domain.user.entity.User;
 import org.example.plusproject.domain.user.repository.UserRepository;
@@ -16,6 +18,7 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     @Override
     @Transactional
@@ -45,5 +48,20 @@ public class UserCommandServiceImpl implements UserCommandService {
 
         // DTO로 변환하여 반환
         return SignUpResponseDto.from(savedUser);
+    }
+
+    @Override
+    public String login(LoginRequestDto requestDto) {
+        String email = requestDto.getEmail();
+        String password = requestDto.getPassword();
+
+        User user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        // JWT 생성 및 반환
+        return jwtUtil.createToken(user.getEmail(), user.getRole());
     }
 }
