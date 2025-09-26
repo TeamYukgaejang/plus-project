@@ -15,7 +15,7 @@ public class SearchCommandService {
 
     // 검색 시 검색어 count 증가
     public void saveOrIncreaseKeyword(String keyword) {
-        searchKeywordRepository.findByKeyword(keyword)
+        searchKeywordRepository.findByKeywordForUpdate(keyword)
                 .ifPresentOrElse(
                         SearchKeyword::increaseCount,
                         () -> searchKeywordRepository.save(SearchKeyword.of(keyword))
