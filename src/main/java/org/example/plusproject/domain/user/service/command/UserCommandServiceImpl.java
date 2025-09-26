@@ -64,6 +64,6 @@ public class UserCommandServiceImpl implements UserCommandService {
         }
 
         // JWT 생성 및 반환
-        return jwtUtil.createToken(user.getEmail(), user.getRole());
+        return jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole());
     }
 }
