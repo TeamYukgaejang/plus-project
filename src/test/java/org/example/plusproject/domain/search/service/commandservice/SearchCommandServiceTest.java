@@ -27,7 +27,7 @@ class SearchCommandServiceTest {
     @DisplayName("기존 검색어가 있으면 count 증가")
     void saveOrIncreaseKeyword_existingKeyword() {
         // given
-        SearchKeyword keyword = SearchKeyword.of("맥북"); // count = 0
+        SearchKeyword keyword = SearchKeyword.of("맥북"); // count = 1
         given(searchKeywordRepository.findByKeywordForUpdate("맥북"))
                 .willReturn(Optional.of(keyword));
 
@@ -35,7 +35,7 @@ class SearchCommandServiceTest {
         searchCommandService.saveOrIncreaseKeyword("맥북");
 
         // then
-        assertThat(keyword.getCount()).isEqualTo(1); // 0 → 1
+        assertThat(keyword.getCount()).isEqualTo(2); // 1 -> 2
         verify(searchKeywordRepository, never()).save(any());
     }
 
@@ -51,7 +51,7 @@ class SearchCommandServiceTest {
 
         // then
         verify(searchKeywordRepository, times(1)).save(argThat(saved ->
-                saved.getKeyword().equals("맥북") && saved.getCount() == 0
+                saved.getKeyword().equals("맥북") && saved.getCount() == 1
         ));
     }
 }

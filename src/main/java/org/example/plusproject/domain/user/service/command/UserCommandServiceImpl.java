@@ -1,6 +1,8 @@
 package org.example.plusproject.domain.user.service.command;
 
 import lombok.RequiredArgsConstructor;
+import org.example.plusproject.common.consts.SuccessCode;
+import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.common.jwt.JwtUtil;
 import org.example.plusproject.domain.user.dto.request.LoginRequestDto;
 import org.example.plusproject.domain.user.dto.response.SignUpResponseDto;
@@ -22,7 +24,7 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     @Override
     @Transactional
-    public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
+    public ApiResponse<SignUpResponseDto> signUp(SignUpRequestDto requestDto) {
         String email = requestDto.getEmail();
         String nickname = requestDto.getNickname();
         String password = requestDto.getPassword();
@@ -46,8 +48,8 @@ public class UserCommandServiceImpl implements UserCommandService {
         // DB 저장
         User savedUser = userRepository.save(user);
 
-        // DTO로 변환하여 반환
-        return SignUpResponseDto.from(savedUser);
+        // DTO로 변환하여 ApiResponse에 담아 반환
+        return ApiResponse.of(SuccessCode.USER_CREATED, SignUpResponseDto.from(savedUser));
     }
 
     @Override
