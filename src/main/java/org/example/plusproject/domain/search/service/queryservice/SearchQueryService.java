@@ -3,6 +3,7 @@ package org.example.plusproject.domain.search.service.queryservice;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.domain.product.repository.ProductRepository;
 import org.example.plusproject.domain.search.dto.response.ProductSearchResponse;
+import org.example.plusproject.domain.search.dto.response.TrendingKeywordResponse;
 import org.example.plusproject.domain.search.exception.SearchErrorCode;
 import org.example.plusproject.domain.search.exception.SearchException;
 import org.example.plusproject.domain.search.repository.SearchKeywordRepository;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +32,19 @@ public class SearchQueryService {
             throw new SearchException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
         }
         return results;
+    }
+
+    // 인기 검색어
+    public List<TrendingKeywordResponse> getPopularKeywords() {
+        return searchKeywordRepository.findAll()
+                .stream()
+                .sorted((a, b) -> Integer.compare(b.getCount(), a.getCount()))
+                .limit(10)
+                .map(k -> TrendingKeywordResponse.builder()
+                        .keyword(k.getKeyword())
+                        .count(k.getCount())
+                        .build())
+                .toList();
     }
 
     private void validateKeyword(String keyword) {
