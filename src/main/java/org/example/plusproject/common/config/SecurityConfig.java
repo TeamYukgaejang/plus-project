@@ -22,6 +22,11 @@ public class SecurityConfig {
         // CSRF 설정
         http.csrf((csrf) -> csrf.disable());
 
+        // 세션 관리 설정
+        http.sessionManagement((sessionManagement) ->
+                sessionManagement.sessionCreationPolicy(org.springframework.security.config.http.SessionCreationPolicy.STATELESS)
+        );
+
         // 기본 설정 (모든 요청 허용) - JWT 구현 시 변경 예정
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests

@@ -1,9 +1,10 @@
 package org.example.plusproject.domain.user.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
-import org.example.plusproject.domain.user.entity.User;
+import org.example.plusproject.domain.user.dto.response.SignUpResponseDto;
 import org.example.plusproject.domain.user.service.command.UserCommandService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserCommandService userCommandService; // Changed field name and type
+    private final UserCommandService userCommandService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<User>> signUp(@RequestBody SignUpRequestDto requestDto) {
-        User createdUser = userCommandService.signUp(requestDto);
-        return ApiResponse.created(createdUser, "회원가입 성공");
+    public ResponseEntity<ApiResponse<SignUpResponseDto>> signUp(@Valid @RequestBody SignUpRequestDto requestDto) {
+        SignUpResponseDto responseDto = userCommandService.signUp(requestDto);
+        return ApiResponse.created(responseDto, "회원가입 성공");
     }
 }
