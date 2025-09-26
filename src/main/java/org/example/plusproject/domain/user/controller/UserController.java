@@ -9,12 +9,9 @@ import org.example.plusproject.common.jwt.JwtUtil;
 import org.example.plusproject.domain.user.dto.request.LoginRequestDto;
 import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
 import org.example.plusproject.domain.user.dto.response.SignUpResponseDto;
-import org.example.plusproject.domain.user.dto.security.AuthUser;
 import org.example.plusproject.domain.user.service.command.UserCommandService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,10 +36,5 @@ public class UserController {
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
         ApiResponse<Void> apiResponse = ApiResponse.of(SuccessCode.REQUEST_SUCCESS, null);
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
-    }
-
-    @GetMapping("/test")
-    public ResponseEntity<ApiResponse<AuthUser>> test(@AuthenticationPrincipal AuthUser authUser) {
-        return ResponseEntity.ok(ApiResponse.of(SuccessCode.REQUEST_SUCCESS, authUser));
     }
 }

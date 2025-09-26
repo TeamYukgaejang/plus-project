@@ -15,7 +15,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getCredentials() {
-        return null; // Credentials are not needed as JWT is self-contained
+        return null;
     }
 
     @Override

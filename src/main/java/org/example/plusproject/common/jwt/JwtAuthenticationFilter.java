@@ -2,6 +2,9 @@ package org.example.plusproject.common.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,11 +41,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String tokenValue = jwtUtil.getJwtFromHeader(request);
 
         if (tokenValue != null) {
-            if (jwtUtil.validateToken(tokenValue)) {
+            try {
                 Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
                 setAuthentication(info);
-            } else {
-                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+            } catch (SecurityException | MalformedJwtException e) {
+                log.error("유효하지 않은 JWT 서명입니다.", e);
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "유효하지 않은 JWT 서명입니다.");
+                return;
+            } catch (ExpiredJwtException e) {
+                log.error("만료된 JWT 토큰입니다.", e);
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "만료된 JWT 토큰입니다.");
+                return;
+            } catch (UnsupportedJwtException e) {
+                log.error("지원되지 않는 JWT 토큰입니다.", e);
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "지원되지 않는 JWT 토큰입니다.");
+                return;
+            } catch (IllegalArgumentException e) {
+                log.error("JWT 클레임이 비어있습니다.", e);
+                sendErrorResponse(response, HttpStatus.BAD_REQUEST, "JWT 클레임이 비어있습니다.");
                 return;
             }
         }
@@ -51,7 +67,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     // 인증 처리
-    public void setAuthentication(Claims claims) {
+    private void setAuthentication(Claims claims) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         Long userId = Long.valueOf(claims.getSubject());
         String email = claims.get("email", String.class);

@@ -22,7 +22,6 @@ public class AuthUser {
     }
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Spring Security expects roles to have the "ROLE_" prefix.
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 }

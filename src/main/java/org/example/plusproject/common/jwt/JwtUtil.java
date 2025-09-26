@@ -2,9 +2,6 @@ package org.example.plusproject.common.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,23 +60,6 @@ public class JwtUtil {
             return bearerToken.substring(BEARER_PREFIX.length());
         }
         return null;
-    }
-
-    // 토큰 검증
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
-            return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            log.error("유효하지 않은 JWT 서명입니다.", e);
-        } catch (ExpiredJwtException e) {
-            log.error("만료된 JWT 토큰입니다.", e);
-        } catch (UnsupportedJwtException e) {
-            log.error("지원되지 않는 JWT 토큰입니다.", e);
-        } catch (IllegalArgumentException e) {
-            log.error("JWT 클레임이 비어있습니다.", e);
-        }
-        return false;
     }
 
 
