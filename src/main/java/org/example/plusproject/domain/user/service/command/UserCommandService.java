@@ -19,4 +19,10 @@ public interface UserCommandService {
      * @return 생성된 JWT
      */
     String login(LoginRequestDto requestDto);
+
+    /**
+     * 회원 탈퇴
+     * @param userId 탈퇴할 사용자의 ID
+     */
+    void deleteUser(Long userId);
 }

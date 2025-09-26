@@ -66,4 +66,13 @@ public class UserCommandServiceImpl implements UserCommandService {
         // JWT 생성 및 반환
         return jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole());
     }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+            () -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다.")
+        );
+        user.delete();
+    }
 }
