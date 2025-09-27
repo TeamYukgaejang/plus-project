@@ -19,7 +19,7 @@ public class ProductCreateRequest {
     private String name;
 
     @NotNull
-    @Min(value = 0)
+    @Min(value = 1) // 상품 가격은 0보다 커야 함
     private Integer price;
 
     @NotBlank
