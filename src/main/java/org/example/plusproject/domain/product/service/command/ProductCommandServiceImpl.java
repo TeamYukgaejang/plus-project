@@ -18,7 +18,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     // 상품 등록
     @Override
     @Transactional
-    public ProductResponse createProduct(@Valid ProductCreateRequest productCreateRequest) {
+    public ProductResponse createProduct(ProductCreateRequest productCreateRequest) {
 
         Product product = Product.of(
                 productCreateRequest.getName(),
