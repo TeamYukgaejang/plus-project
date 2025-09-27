@@ -1,7 +1,6 @@
 package org.example.plusproject.domain.product.service.command;
 
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.domain.product.dto.request.ProductCreateRequest;
 import org.example.plusproject.domain.product.dto.response.ProductResponse;
