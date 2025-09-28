@@ -38,4 +38,9 @@ public class Category extends BaseRemovableEntity {
     public static Category of(String name, String description) {
         return new Category(null, name, description);
     }
+
+    public void update(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }

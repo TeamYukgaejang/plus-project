@@ -20,19 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryController {
 
-    private final CategoryCommandService categoryCommandService;
     private final CategoryQueryService categoryQueryService;
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<CategoryResponse>> createCategory(
-            @Valid @RequestBody CategoryCreateRequest request
-    ) {
-        CategoryResponse response = categoryCommandService.createCategory(request);
-
-        return ResponseEntity
-                .status(CategorySuccessCode.CATEGORY_CREATED.getHttpStatus())
-                .body(ApiResponse.of(CategorySuccessCode.CATEGORY_CREATED, response));
-    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<CategoryResponse>>> getAllCategories() {
