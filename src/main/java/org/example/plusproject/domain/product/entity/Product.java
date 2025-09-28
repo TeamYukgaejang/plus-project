@@ -3,6 +3,7 @@ package org.example.plusproject.domain.product.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.plusproject.common.entity.BaseRemovableEntity;
+import org.hibernate.annotations.Where;
 
 
 @Entity
@@ -10,6 +11,7 @@ import org.example.plusproject.common.entity.BaseRemovableEntity;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Where(clause = "deleted_at IS NULL")
 public class Product extends BaseRemovableEntity {
 
     @Id

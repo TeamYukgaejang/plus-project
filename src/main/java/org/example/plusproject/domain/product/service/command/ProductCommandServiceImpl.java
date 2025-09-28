@@ -49,4 +49,20 @@ public class ProductCommandServiceImpl implements ProductCommandService {
 
         return ProductResponse.from(product);
     }
+
+    // 상품 삭제
+    @Override
+    @Transactional
+    public ProductResponse deleteProduct(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new GlobalException(ProductErrorCode.PRODUCT_NOT_FOUND));
+
+        if (product.getDeletedAt() != null) {
+            throw new GlobalException(ProductErrorCode.PRODUCT_ALREADY_DELETED);
+        }
+
+        product.delete(); // deletedAt에 현재 시간 설정
+
+        return ProductResponse.from(product);
+    }
 }
