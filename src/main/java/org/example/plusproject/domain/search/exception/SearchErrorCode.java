@@ -2,12 +2,12 @@ package org.example.plusproject.domain.search.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.example.plusproject.common.consts.ErrorCode;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum SearchErrorCode {
-
+public enum SearchErrorCode implements ErrorCode {
     // 검색 관련 에러코드
     SEARCH_KEYWORD_EMPTY(HttpStatus.BAD_REQUEST, "SEARCH_001", "검색어는 비어 있을 수 없습니다."),
     SEARCH_RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "SEARCH_002", "검색 결과가 존재하지 않습니다."),
