@@ -28,12 +28,18 @@ public class Review extends BaseRemovableEntity {
     private Product product;
 
     @Builder
-    private Review(String content, int point) {
+    private Review(String content, int point, User user, Product product) {
         this.content = content;
         this.point = point;
+        this.user = user;
+        this.product = product;
     }
 
-    public static Review of(String content, int point) {
-        return new Review(content, point);
+    public static Review of(String content, int point, User user, Product product) {
+        return new Review(
+                content,
+                point,
+                user,
+                product);
     }
 }
