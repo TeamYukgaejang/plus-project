@@ -1,9 +1,11 @@
 package org.example.plusproject.domain.user.dto.request;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class SignUpRequestDto {
     @NotBlank
     @Email
