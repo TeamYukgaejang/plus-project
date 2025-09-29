@@ -1,7 +1,6 @@
 package org.example.plusproject.domain.search.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.plusproject.common.consts.SuccessCode;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.common.dto.response.PageResponse;
 import org.example.plusproject.domain.search.dto.response.ProductSearchResponse;
