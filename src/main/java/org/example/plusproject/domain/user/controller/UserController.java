@@ -37,13 +37,18 @@ public class UserController {
     public ResponseEntity<ApiResponse<Void>> login(@Valid @RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
         String token = userCommandService.login(requestDto);
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
-        ApiResponse<Void> apiResponse = ApiResponse.of(UserSuccessCode.REQUEST_SUCCESS, null);
+        ApiResponse<Void> apiResponse = ApiResponse.of(UserSuccessCode.LOGIN_SUCCESS, null);
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
     @DeleteMapping("/user")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@AuthenticationPrincipal AuthUser authUser) {
         userCommandService.deleteUser(authUser.getUserId());
-        return ResponseEntity.ok(ApiResponse.of(UserSuccessCode.REQUEST_SUCCESS, null));
+        return ResponseEntity.ok(ApiResponse.of(UserSuccessCode.DELETE_USER_SUCCESS, null));
+    }
+
+    @PostMapping("/auth/logout")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        return ResponseEntity.ok(ApiResponse.of(UserSuccessCode.LOGOUT_SUCCESS, null));
     }
 }
