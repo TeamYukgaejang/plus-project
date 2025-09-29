@@ -5,18 +5,21 @@ import org.example.plusproject.domain.user.dto.request.LoginRequestDto;
 import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
 import org.example.plusproject.domain.user.entity.User;
 import org.example.plusproject.domain.user.enums.Role;
+import org.example.plusproject.domain.user.exception.EmailDuplicatedException;
+import org.example.plusproject.domain.user.exception.LoginFailedException;
+import org.example.plusproject.domain.user.exception.NicknameDuplicatedException;
+import org.example.plusproject.domain.user.exception.UserNotFoundException;
 import org.example.plusproject.domain.user.repository.UserRepository;
+import org.example.plusproject.domain.user.service.query.UserQueryService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,13 +33,20 @@ class UserCommandServiceImplTest {
     private UserRepository userRepository;
 
     @Mock
+    private UserQueryService userQueryService;
+
+    @Mock
     private PasswordEncoder passwordEncoder;
 
     @Mock
     private JwtUtil jwtUtil;
 
-    @InjectMocks
     private UserCommandServiceImpl userCommandService;
+
+    @BeforeEach
+    void setUp() {
+        userCommandService = new UserCommandServiceImpl(userRepository, userQueryService, passwordEncoder, jwtUtil);
+    }
 
     @Test
     @DisplayName("회원가입 성공")
@@ -44,9 +54,10 @@ class UserCommandServiceImplTest {
         // 준비
         SignUpRequestDto requestDto = new SignUpRequestDto("test@test.com", "password123!", "nickname");
         String encodedPassword = "encodedPassword";
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
 
-        when(userRepository.existsByEmail(requestDto.getEmail())).thenReturn(false);
-        when(userRepository.existsByNickname(requestDto.getNickname())).thenReturn(false);
+        when(userQueryService.existsByEmail(requestDto.getEmail())).thenReturn(false);
+        when(userQueryService.existsByNickname(requestDto.getNickname())).thenReturn(false);
         when(passwordEncoder.encode(requestDto.getPassword())).thenReturn(encodedPassword);
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -54,7 +65,6 @@ class UserCommandServiceImplTest {
         userCommandService.signUp(requestDto);
 
         // 검증
-        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(userCaptor.capture());
         User capturedUser = userCaptor.getValue();
 
@@ -69,16 +79,11 @@ class UserCommandServiceImplTest {
     void 회원가입_실패_이메일중복() {
         // 준비
         SignUpRequestDto requestDto = new SignUpRequestDto("test@test.com", "password123!", "nickname");
-        when(userRepository.existsByEmail(requestDto.getEmail())).thenReturn(true);
+        when(userQueryService.existsByEmail(requestDto.getEmail())).thenReturn(true);
 
         // 실행 & 검증
-        assertThrows(IllegalArgumentException.class, () -> {
-            userCommandService.signUp(requestDto);
-        });
+        assertThrows(EmailDuplicatedException.class, () -> userCommandService.signUp(requestDto));
 
-        verify(userRepository).existsByEmail(requestDto.getEmail());
-        verify(userRepository, never()).existsByNickname(any());
-        verify(passwordEncoder, never()).encode(any());
         verify(userRepository, never()).save(any());
     }
 
@@ -87,17 +92,12 @@ class UserCommandServiceImplTest {
     void 회원가입_실패_닉네임중복() {
         // 준비
         SignUpRequestDto requestDto = new SignUpRequestDto("test@test.com", "password123!", "nickname");
-        when(userRepository.existsByEmail(requestDto.getEmail())).thenReturn(false);
-        when(userRepository.existsByNickname(requestDto.getNickname())).thenReturn(true);
+        when(userQueryService.existsByEmail(requestDto.getEmail())).thenReturn(false);
+        when(userQueryService.existsByNickname(requestDto.getNickname())).thenReturn(true);
 
         // 실행 & 검증
-        assertThrows(IllegalArgumentException.class, () -> {
-            userCommandService.signUp(requestDto);
-        });
+        assertThrows(NicknameDuplicatedException.class, () -> userCommandService.signUp(requestDto));
 
-        verify(userRepository).existsByEmail(requestDto.getEmail());
-        verify(userRepository).existsByNickname(requestDto.getNickname());
-        verify(passwordEncoder, never()).encode(any());
         verify(userRepository, never()).save(any());
     }
 
@@ -107,11 +107,10 @@ class UserCommandServiceImplTest {
         // 준비
         LoginRequestDto requestDto = new LoginRequestDto("test@test.com", "password123!");
         User user = User.of("test@test.com", "encodedPassword", "nickname", Role.USER);
-        // 실제 User 객체는 ID를 가지므로 테스트에서도 ID를 설정해주는 것이 좋습니다.
-        org.springframework.test.util.ReflectionTestUtils.setField(user, "id", 1L);
+        ReflectionTestUtils.setField(user, "id", 1L);
         String expectedToken = "jwt-token";
 
-        when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.of(user));
+        when(userQueryService.findUserByEmail(requestDto.getEmail())).thenReturn(user);
         when(passwordEncoder.matches(requestDto.getPassword(), user.getPassword())).thenReturn(true);
         when(jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole())).thenReturn(expectedToken);
 
@@ -120,7 +119,6 @@ class UserCommandServiceImplTest {
 
         // 검증
         assertThat(token).isEqualTo(expectedToken);
-        verify(jwtUtil).createToken(user.getId(), user.getEmail(), user.getRole());
     }
 
     @Test
@@ -128,12 +126,10 @@ class UserCommandServiceImplTest {
     void 로그인_실패_사용자없음() {
         // 준비
         LoginRequestDto requestDto = new LoginRequestDto("test@test.com", "password123!");
-        when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.empty());
+        when(userQueryService.findUserByEmail(requestDto.getEmail())).thenThrow(new UserNotFoundException());
 
         // 실행 & 검증
-        assertThrows(IllegalArgumentException.class, () -> {
-            userCommandService.login(requestDto);
-        });
+        assertThrows(LoginFailedException.class, () -> userCommandService.login(requestDto));
     }
 
     @Test
@@ -143,13 +139,11 @@ class UserCommandServiceImplTest {
         LoginRequestDto requestDto = new LoginRequestDto("test@test.com", "password123!");
         User user = User.of("test@test.com", "encodedPassword", "nickname", Role.USER);
 
-        when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.of(user));
+        when(userQueryService.findUserByEmail(requestDto.getEmail())).thenReturn(user);
         when(passwordEncoder.matches(requestDto.getPassword(), user.getPassword())).thenReturn(false);
 
         // 실행 & 검증
-        assertThrows(IllegalArgumentException.class, () -> {
-            userCommandService.login(requestDto);
-        });
+        assertThrows(LoginFailedException.class, () -> userCommandService.login(requestDto));
     }
 
     @Test
@@ -157,15 +151,17 @@ class UserCommandServiceImplTest {
     void 회원탈퇴_성공() {
         // 준비
         Long userId = 1L;
-        User user = spy(User.of("test@test.com", "encodedPassword", "nickname", Role.USER));
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        User user = User.of("test@test.com", "encodedPassword", "nickname", Role.USER);
+        User spiedUser = spy(user);
+
+        when(userQueryService.findUserById(userId)).thenReturn(spiedUser);
 
         // 실행
         userCommandService.deleteUser(userId);
 
         // 검증
-        verify(userRepository).findById(userId);
-        verify(user).delete();
+        verify(userQueryService).findUserById(userId);
+        verify(spiedUser).delete();
     }
 
     @Test
@@ -173,11 +169,9 @@ class UserCommandServiceImplTest {
     void 회원탈퇴_실패_사용자없음() {
         // 준비
         Long userId = 1L;
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        when(userQueryService.findUserById(userId)).thenThrow(new UserNotFoundException());
 
         // 실행 & 검증
-        assertThrows(IllegalArgumentException.class, () -> {
-            userCommandService.deleteUser(userId);
-        });
+        assertThrows(UserNotFoundException.class, () -> userCommandService.deleteUser(userId));
     }
 }
