@@ -28,7 +28,7 @@ public class SearchKeyword extends BaseEntity {
 
     public static SearchKeyword of(String keyword) {
 
-        return new SearchKeyword(null, keyword, 0, LocalDateTime.now());
+        return new SearchKeyword(null, keyword, 1, LocalDateTime.now());
     }
 
     public void increaseCount() {

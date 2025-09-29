@@ -44,7 +44,10 @@ public class SearchQueryService {
     }
 
     // v2 캐시 적용
-    @Cacheable(value = "products", key = "#keyword + '_' + #pageable.pageNumber")
+    @Cacheable(
+            value = "products",
+            key = "#keyword + '_' + #pageable.pageNumber + '_' + #pageable.pageSize + '_' + #pageable.sort.toString()"
+    )
     public Page<ProductSearchResponse> searchV2(String keyword, Pageable pageable) {
         validateKeyword(keyword);
         Page<ProductSearchResponse> results = productRepository.findByNameContaining(keyword, pageable)

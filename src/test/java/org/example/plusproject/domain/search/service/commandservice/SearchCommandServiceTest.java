@@ -30,7 +30,7 @@ class SearchCommandServiceTest {
 
         searchCommandService.saveOrIncreaseKeyword("사료");
 
-        assertThat(keyword.getCount()).isEqualTo(1);
+        assertThat(keyword.getCount()).isEqualTo(2);
         verify(searchKeywordRepository, never()).save(any());
     }
 
@@ -44,7 +44,7 @@ class SearchCommandServiceTest {
 
         verify(searchKeywordRepository, times(1))
                 .save(argThat(saved ->
-                        saved.getKeyword().equals("사료") && saved.getCount() == 0
+                        saved.getKeyword().equals("사료") && saved.getCount() == 1
                 ));
     }
 }
