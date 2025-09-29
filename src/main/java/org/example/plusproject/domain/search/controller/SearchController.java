@@ -34,7 +34,7 @@ public class SearchController {
     ) {
         Page<ProductSearchResponse> results = searchQueryService.searchV1(keyword, pageable);
         searchCommandService.saveOrIncreaseKeyword(keyword);
-        return ApiResponse.of(SearchSuccessCode .SEARCH_SUCCESS, PageResponse.fromPage(results));
+        return ApiResponse.of(SearchSuccessCode.SEARCH_SUCCESS, PageResponse.fromPage(results));
     }
 
     // 인기 검색어 조회
