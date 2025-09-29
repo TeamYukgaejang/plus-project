@@ -2,6 +2,7 @@ package org.example.plusproject.domain.category.service.command;
 
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.domain.category.dto.request.CategoryCreateRequest;
+import org.example.plusproject.domain.category.dto.request.CategoryUpdateRequest;
 import org.example.plusproject.domain.category.dto.response.CategoryResponse;
 import org.example.plusproject.domain.category.entity.Category;
 import org.example.plusproject.domain.category.exception.CategoryErrorCode;
@@ -29,5 +30,21 @@ public class CategoryCommandServiceImpl implements CategoryCommandService {
         );
 
         return CategoryResponse.from(savedCategory);
+    }
+
+    @Override
+    @Transactional
+    public CategoryResponse updateCategory(Long id, CategoryUpdateRequest request) {
+
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
+
+        if (categoryRepository.existsByNameAndIdNot(request.getName(), id)) {
+            throw new CategoryException(CategoryErrorCode.CATEGORY_NAME_DUPLICATED);
+        }
+
+        category.update(request.getName(), request.getDescription());
+
+        return CategoryResponse.from(category);
     }
 }
