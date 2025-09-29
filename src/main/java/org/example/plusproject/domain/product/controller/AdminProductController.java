@@ -32,7 +32,7 @@ public class AdminProductController {
     // 상품 정보 수정
     @PutMapping("/{productId}")
     public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
-            @Valid @PathVariable Long productId,
+            @PathVariable Long productId,
             @Valid @RequestBody ProductRequest productRequest
     ) {
         ProductResponse productResponse = productCommandService.updateProduct(productId, productRequest);

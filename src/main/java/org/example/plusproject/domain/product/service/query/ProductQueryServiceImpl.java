@@ -5,6 +5,7 @@ import org.example.plusproject.common.exception.GlobalException;
 import org.example.plusproject.domain.product.dto.response.ProductResponse;
 import org.example.plusproject.domain.product.entity.Product;
 import org.example.plusproject.domain.product.exception.ProductErrorCode;
+import org.example.plusproject.domain.product.exception.ProductException;
 import org.example.plusproject.domain.product.repository.ProductRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,15 +24,15 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     @Override
     public ProductResponse getProductById(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new GlobalException(ProductErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
         return ProductResponse.from(product);
     }
 
     // 인기 상품 조회(리뷰순)
     @Override
-    public List<ProductResponse> getRelatedProducts(Long productId, String sort, int limit) {
+    public List<ProductResponse> getRelatedProducts(Long productId, int limit) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new GlobalException(ProductErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(0, limit);
         List<Product> relatedProducts = productRepository.findByCategoryIdAndIdNotOrderByReviewCountDesc(
