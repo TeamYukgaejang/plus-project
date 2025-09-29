@@ -17,13 +17,14 @@ import org.springframework.stereotype.Service;
 public class ProductCommandServiceImpl implements ProductCommandService {
 
     private final ProductRepository productRepository;
+    private final CategoryQueryService  categoryQueryService;
 
     // 상품 등록
     @Override
     @Transactional
     public ProductResponse createProduct(ProductRequest productRequest) {
 
-        Category category = categoryQueryService.getCategoryEntityById(productRequest.getCategoryId());
+        Category category = productRequest.getCategory();
 
         Product product = Product.of(
                 productRequest.getName(),
