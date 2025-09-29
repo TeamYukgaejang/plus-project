@@ -61,19 +61,24 @@ class SearchQueryServiceTest {
 
     @Test
     void 인기검색어_Top10_반환() {
-        SearchKeyword keyword1 = SearchKeyword.of("사료");
-        keyword1.increaseCount();
-        SearchKeyword keyword2 = SearchKeyword.of("강아지 사료");
-        keyword2.increaseCount();
-        keyword2.increaseCount();
+        // given
+        SearchKeyword 사료 = SearchKeyword.of("사료");
+        사료.increaseCount(); 사료.increaseCount(); // count=3
+        SearchKeyword 간식 = SearchKeyword.of("간식");
+        간식.increaseCount(); // count=2
+        SearchKeyword 장난감 = SearchKeyword.of("장난감");
 
         given(searchKeywordRepository.findTop10ByOrderByCountDesc())
-                .willReturn(List.of(keyword2, keyword1));
+                .willReturn(List.of(사료, 간식, 장난감));
 
+        // when
         List<TrendingKeywordResponse> results = searchQueryService.getPopularKeywords();
 
-        assertThat(results).hasSize(2);
-        assertThat(results.get(0).getKeyword()).isEqualTo("강아지 사료");
-        assertThat(results.get(0).getCount()).isEqualTo(2);
+        // then
+        assertThat(results).hasSize(3);
+        assertThat(results.get(0).getKeyword()).isEqualTo("사료");
+        assertThat(results.get(0).getCount()).isEqualTo(3);
+        assertThat(results.get(1).getKeyword()).isEqualTo("간식");
+        assertThat(results.get(1).getCount()).isEqualTo(2);
     }
 }
