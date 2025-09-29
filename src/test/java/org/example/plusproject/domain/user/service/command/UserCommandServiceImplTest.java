@@ -11,11 +11,11 @@ import org.example.plusproject.domain.user.exception.NicknameDuplicatedException
 import org.example.plusproject.domain.user.exception.UserNotFoundException;
 import org.example.plusproject.domain.user.repository.UserRepository;
 import org.example.plusproject.domain.user.service.query.UserQueryService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,8 +41,12 @@ class UserCommandServiceImplTest {
     @Mock
     private JwtUtil jwtUtil;
 
-    @InjectMocks
     private UserCommandServiceImpl userCommandService;
+
+    @BeforeEach
+    void setUp() {
+        userCommandService = new UserCommandServiceImpl(userRepository, userQueryService, passwordEncoder, jwtUtil);
+    }
 
     @Test
     @DisplayName("회원가입 성공")
@@ -75,6 +79,9 @@ class UserCommandServiceImplTest {
     void 회원가입_실패_이메일중복() {
         // 준비
         SignUpRequestDto requestDto = new SignUpRequestDto("test@test.com", "password123!", "nickname");
+        when(userQueryService.existsByEmail(requestDto.getEmail())).thenReturn(true);
+
+        // 실행 & 검증
         assertThrows(EmailDuplicatedException.class, () -> userCommandService.signUp(requestDto));
 
         verify(userRepository, never()).save(any());
@@ -119,6 +126,9 @@ class UserCommandServiceImplTest {
     void 로그인_실패_사용자없음() {
         // 준비
         LoginRequestDto requestDto = new LoginRequestDto("test@test.com", "password123!");
+        when(userQueryService.findUserByEmail(requestDto.getEmail())).thenThrow(new UserNotFoundException());
+
+        // 실행 & 검증
         assertThrows(LoginFailedException.class, () -> userCommandService.login(requestDto));
     }
 
