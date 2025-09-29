@@ -1,8 +1,10 @@
 package org.example.plusproject.domain.user.service.command;
 
 import org.example.plusproject.common.jwt.JwtUtil;
+import org.example.plusproject.domain.user.dto.request.LoginRequestDto;
 import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
 import org.example.plusproject.domain.user.entity.User;
+import org.example.plusproject.domain.user.enums.Role;
 import org.example.plusproject.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,9 +14,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserCommandServiceImplTest {
@@ -24,7 +29,7 @@ class UserCommandServiceImplTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
-    
+
     @Mock
     private JwtUtil jwtUtil;
 
@@ -150,8 +155,6 @@ class UserCommandServiceImplTest {
 
         // 검증
         verify(userRepository).findById(userId);
-        // user.delete()가 호출되었는지 확인하는 것은 user 객체의 상태를 확인해야 하므로, 
-        // 이 테스트에서는 서비스가 repository를 올바르게 호출하는지만 검증합니다.
     }
 
     @Test
