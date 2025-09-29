@@ -1,12 +1,12 @@
 package org.example.plusproject.domain.user.service.command;
 
 import lombok.RequiredArgsConstructor;
-import org.example.plusproject.common.consts.SuccessCode;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.common.jwt.JwtUtil;
 import org.example.plusproject.domain.user.dto.request.LoginRequestDto;
 import org.example.plusproject.domain.user.dto.response.SignUpResponseDto;
 import org.example.plusproject.domain.user.entity.User;
+import org.example.plusproject.domain.user.exception.UserSuccessCode;
 import org.example.plusproject.domain.user.repository.UserRepository;
 import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,7 +49,7 @@ public class UserCommandServiceImpl implements UserCommandService {
         User savedUser = userRepository.save(user);
 
         // DTO로 변환하여 ApiResponse에 담아 반환
-        return ApiResponse.of(SuccessCode.USER_CREATED, SignUpResponseDto.from(savedUser));
+        return ApiResponse.of(UserSuccessCode.USER_CREATED, SignUpResponseDto.from(savedUser));
     }
 
     @Override
