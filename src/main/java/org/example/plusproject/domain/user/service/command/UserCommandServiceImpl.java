@@ -1,10 +1,12 @@
 package org.example.plusproject.domain.user.service.command;
 
 import lombok.RequiredArgsConstructor;
+import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.common.jwt.JwtUtil;
 import org.example.plusproject.domain.user.dto.request.LoginRequestDto;
 import org.example.plusproject.domain.user.dto.response.SignUpResponseDto;
 import org.example.plusproject.domain.user.entity.User;
+import org.example.plusproject.domain.user.exception.UserSuccessCode;
 import org.example.plusproject.domain.user.repository.UserRepository;
 import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +24,7 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     @Override
     @Transactional
-    public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
+    public ApiResponse<SignUpResponseDto> signUp(SignUpRequestDto requestDto) {
         String email = requestDto.getEmail();
         String nickname = requestDto.getNickname();
         String password = requestDto.getPassword();
@@ -46,8 +48,8 @@ public class UserCommandServiceImpl implements UserCommandService {
         // DB 저장
         User savedUser = userRepository.save(user);
 
-        // DTO로 변환하여 반환
-        return SignUpResponseDto.from(savedUser);
+        // DTO로 변환하여 ApiResponse에 담아 반환
+        return ApiResponse.of(UserSuccessCode.USER_CREATED, SignUpResponseDto.from(savedUser));
     }
 
     @Override
@@ -62,6 +64,15 @@ public class UserCommandServiceImpl implements UserCommandService {
         }
 
         // JWT 생성 및 반환
-        return jwtUtil.createToken(user.getEmail(), user.getRole());
+        return jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole());
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+            () -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다.")
+        );
+        user.delete();
     }
 }

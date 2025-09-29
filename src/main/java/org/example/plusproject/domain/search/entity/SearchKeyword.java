@@ -27,6 +27,7 @@ public class SearchKeyword extends BaseEntity {
     private LocalDateTime lastSearchedAt;
 
     public static SearchKeyword of(String keyword) {
+
         return new SearchKeyword(null, keyword, 1, LocalDateTime.now());
     }
 

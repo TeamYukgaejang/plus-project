@@ -1,17 +1,11 @@
 package org.example.plusproject.common.consts;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 
-@Getter
-@RequiredArgsConstructor
-public enum SuccessCode {
+public interface SuccessCode {
 
-    REQUEST_SUCCESS(HttpStatus.OK, "요청이 성공적으로 처리되었습니다."),
-    SEARCH_SUCCESS(HttpStatus.OK, "검색이 성공적으로 처리되었습니다."),
-    SEARCH_TRENDING_SUCCESS(HttpStatus.OK, "인기 검색어 조회가 성공적으로 처리되었습니다.");
+    HttpStatus getHttpStatus();
 
-    private final HttpStatus httpStatus;
-    private final String message;
+    String getMessage();
 }
