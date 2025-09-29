@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 public enum ProductSuccessCode implements SuccessCode {
 
     PRODUCT_CREATED(HttpStatus.CREATED, "상품이 성공적으로 등록되었습니다."),
-    PRODUCT_GET_SUCCESS(HttpStatus.OK, "상품이 성공적으로 조회되었습니다.");
+    PRODUCT_GET_SUCCESS(HttpStatus.OK, "상품이 성공적으로 조회되었습니다."),
+    PRODUCT_UPDATED(HttpStatus.OK, "상품이 성공적으로 수정되었습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
