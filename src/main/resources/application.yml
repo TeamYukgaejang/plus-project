@@ -11,6 +11,13 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+  cache:
+    type: redis
+    data:
+      redis:
+        host: localhost
+        port: 6379
+        timeout: 6000ms
 
 jwt:
   secret:
