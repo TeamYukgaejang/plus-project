@@ -40,4 +40,15 @@ public class AdminProductController {
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.of(ProductSuccessCode.PRODUCT_UPDATED, productResponse));
     }
+
+    // 상품 삭제
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<ApiResponse<ProductResponse>> deleteProduct(
+            @PathVariable Long productId
+    ){
+        ProductResponse productResponse = productCommandService.deleteProduct(productId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.of(ProductSuccessCode.PRODUCT_DELETED, productResponse));
+    }
 }
