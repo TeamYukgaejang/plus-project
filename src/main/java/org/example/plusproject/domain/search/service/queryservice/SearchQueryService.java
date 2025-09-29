@@ -7,6 +7,7 @@ import org.example.plusproject.domain.search.dto.response.TrendingKeywordRespons
 import org.example.plusproject.domain.search.exception.SearchErrorCode;
 import org.example.plusproject.domain.search.exception.SearchException;
 import org.example.plusproject.domain.search.repository.SearchKeywordRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,20 @@ public class SearchQueryService {
                         .count(k.getCount())
                         .build())
                 .toList();
+    }
+
+    // v2 캐시 적용
+    @Cacheable(value = "products", key = "#keyword + '_' + #pageable.pageNumber")
+    public Page<ProductSearchResponse> searchV2(String keyword, Pageable pageable) {
+        validateKeyword(keyword);
+        Page<ProductSearchResponse> results = productRepository.findByNameContaining(keyword, pageable)
+                .map(ProductSearchResponse::from);
+
+        if (results.isEmpty()) {
+            throw new SearchException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
+        }
+
+        return results;
     }
 
     private void validateKeyword(String keyword) {
