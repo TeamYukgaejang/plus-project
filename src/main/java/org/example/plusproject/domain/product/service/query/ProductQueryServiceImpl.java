@@ -30,7 +30,7 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     @Override
     public List<ProductResponse> getRelatedProducts(Long productId, int limit) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new GlobalException(ProductErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
         Pageable pageable = PageRequest.of(0, limit);
         List<Product> relatedProducts = productRepository.findByCategoryIdAndIdNotOrderByReviewCountDesc(
