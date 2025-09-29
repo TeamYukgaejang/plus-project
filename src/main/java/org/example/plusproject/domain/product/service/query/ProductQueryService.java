@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ProductQueryService {
     ProductResponse getProductById(Long productId);
-    List<ProductResponse> getRelatedProducts(Long categoryId, String sort, int limit);
+    List<ProductResponse> getRelatedProducts(Long productId, int limit);
 }

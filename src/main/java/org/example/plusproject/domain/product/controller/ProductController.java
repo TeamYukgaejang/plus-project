@@ -33,10 +33,9 @@ public class ProductController {
     @GetMapping("/{productId}/related")
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getRelatedProductsByReview(
             @PathVariable Long productId,
-            @RequestParam(defaultValue = "review") String sort,
             @RequestParam(defaultValue = "5") int limit
     ) {
-        List<ProductResponse> relatedProducts = productQueryService.getRelatedProducts(productId, sort, limit);
+        List<ProductResponse> relatedProducts = productQueryService.getRelatedProducts(productId, limit);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.of(ProductSuccessCode.PRODUCT_GET_SUCCESS, relatedProducts));
