@@ -5,6 +5,9 @@ import org.example.plusproject.domain.user.dto.request.LoginRequestDto;
 import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
 import org.example.plusproject.domain.user.entity.User;
 import org.example.plusproject.domain.user.enums.Role;
+import org.example.plusproject.domain.user.exception.EmailDuplicatedException;
+import org.example.plusproject.domain.user.exception.LoginFailedException;
+import org.example.plusproject.domain.user.exception.NicknameDuplicatedException;
 import org.example.plusproject.domain.user.exception.UserNotFoundException;
 import org.example.plusproject.domain.user.repository.UserRepository;
 import org.example.plusproject.domain.user.service.query.UserQueryService;
@@ -72,10 +75,7 @@ class UserCommandServiceImplTest {
     void 회원가입_실패_이메일중복() {
         // 준비
         SignUpRequestDto requestDto = new SignUpRequestDto("test@test.com", "password123!", "nickname");
-        when(userQueryService.existsByEmail(requestDto.getEmail())).thenReturn(true);
-
-        // 실행 & 검증
-        assertThrows(IllegalArgumentException.class, () -> userCommandService.signUp(requestDto));
+        assertThrows(EmailDuplicatedException.class, () -> userCommandService.signUp(requestDto));
 
         verify(userRepository, never()).save(any());
     }
@@ -89,7 +89,7 @@ class UserCommandServiceImplTest {
         when(userQueryService.existsByNickname(requestDto.getNickname())).thenReturn(true);
 
         // 실행 & 검증
-        assertThrows(IllegalArgumentException.class, () -> userCommandService.signUp(requestDto));
+        assertThrows(NicknameDuplicatedException.class, () -> userCommandService.signUp(requestDto));
 
         verify(userRepository, never()).save(any());
     }
@@ -119,10 +119,7 @@ class UserCommandServiceImplTest {
     void 로그인_실패_사용자없음() {
         // 준비
         LoginRequestDto requestDto = new LoginRequestDto("test@test.com", "password123!");
-        when(userQueryService.findUserByEmail(requestDto.getEmail())).thenThrow(new UserNotFoundException());
-
-        // 실행 & 검증
-        assertThrows(IllegalArgumentException.class, () -> userCommandService.login(requestDto));
+        assertThrows(LoginFailedException.class, () -> userCommandService.login(requestDto));
     }
 
     @Test
@@ -136,7 +133,7 @@ class UserCommandServiceImplTest {
         when(passwordEncoder.matches(requestDto.getPassword(), user.getPassword())).thenReturn(false);
 
         // 실행 & 검증
-        assertThrows(IllegalArgumentException.class, () -> userCommandService.login(requestDto));
+        assertThrows(LoginFailedException.class, () -> userCommandService.login(requestDto));
     }
 
     @Test

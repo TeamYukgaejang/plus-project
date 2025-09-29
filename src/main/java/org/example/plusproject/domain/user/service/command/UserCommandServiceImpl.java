@@ -8,6 +8,9 @@ import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
 import org.example.plusproject.domain.user.dto.response.SignUpResponseDto;
 import org.example.plusproject.domain.user.entity.User;
 import org.example.plusproject.domain.user.enums.Role;
+import org.example.plusproject.domain.user.exception.EmailDuplicatedException;
+import org.example.plusproject.domain.user.exception.LoginFailedException;
+import org.example.plusproject.domain.user.exception.NicknameDuplicatedException;
 import org.example.plusproject.domain.user.exception.UserNotFoundException;
 import org.example.plusproject.domain.user.exception.UserSuccessCode;
 import org.example.plusproject.domain.user.repository.UserRepository;
@@ -33,12 +36,12 @@ public class UserCommandServiceImpl implements UserCommandService {
 
         // 이메일 중복 확인
         if (userQueryService.existsByEmail(email)) {
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            throw new EmailDuplicatedException();
         }
 
         // 닉네임 중복 확인
         if (userQueryService.existsByNickname(nickname)) {
-            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+            throw new NicknameDuplicatedException();
         }
 
         // 비밀번호 암호화
@@ -63,12 +66,12 @@ public class UserCommandServiceImpl implements UserCommandService {
         try {
             user = userQueryService.findUserByEmail(email);
         } catch (UserNotFoundException e) {
-            // 사용자 존재 여부가 노출되지 않도록, 기존과 동일한 예외를 던집니다.
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+            // 사용자 존재 여부가 노출되지 않도록, 로그인 실패 예외를 던집니다.
+            throw new LoginFailedException();
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new LoginFailedException();
         }
 
         // JWT 생성 및 반환
