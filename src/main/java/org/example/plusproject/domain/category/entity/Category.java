@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+//@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Category extends BaseRemovableEntity {
 
     @Id
@@ -24,8 +24,8 @@ public class Category extends BaseRemovableEntity {
     @Column(nullable = false, length = 100)
     private String description;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products = new ArrayList<>();
+//    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Product> products = new ArrayList<>();
 
 
     @Builder
@@ -37,5 +37,10 @@ public class Category extends BaseRemovableEntity {
 
     public static Category of(String name, String description) {
         return new Category(null, name, description);
+    }
+
+    public void update(String name, String description) {
+        this.name = name;
+        this.description = description;
     }
 }
