@@ -1,6 +1,7 @@
 package org.example.plusproject.domain.product.service.command;
 
-import org.example.plusproject.common.exception.GlobalException;
+import org.example.plusproject.domain.category.entity.Category;
+import org.example.plusproject.domain.category.service.query.CategoryQueryService;
 import org.example.plusproject.domain.product.exception.ProductErrorCode;
 import org.example.plusproject.domain.product.exception.ProductException;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,17 +17,20 @@ import org.springframework.stereotype.Service;
 public class ProductCommandServiceImpl implements ProductCommandService {
 
     private final ProductRepository productRepository;
+    private final CategoryQueryService  categoryQueryService;
 
     // 상품 등록
     @Override
     @Transactional
     public ProductResponse createProduct(ProductRequest productRequest) {
 
+        Category category = productRequest.getCategory();
+
         Product product = Product.of(
                 productRequest.getName(),
                 productRequest.getPrice(),
                 productRequest.getContent(),
-                productRequest.getCategoryId()
+                category
         );
 
         Product savedProduct = productRepository.save(product);
@@ -45,7 +49,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
                 productRequest.getName(),
                 productRequest.getPrice(),
                 productRequest.getContent(),
-                productRequest.getCategoryId()
+                productRequest.getCategory()
         );
 
         return ProductResponse.from(product);

@@ -1,7 +1,6 @@
 package org.example.plusproject.domain.product.service.query;
 
 import lombok.RequiredArgsConstructor;
-import org.example.plusproject.common.exception.GlobalException;
 import org.example.plusproject.domain.product.dto.response.ProductResponse;
 import org.example.plusproject.domain.product.entity.Product;
 import org.example.plusproject.domain.product.exception.ProductErrorCode;
@@ -36,7 +35,7 @@ public class ProductQueryServiceImpl implements ProductQueryService {
 
         Pageable pageable = PageRequest.of(0, limit);
         List<Product> relatedProducts = productRepository.findByCategoryIdAndIdNotOrderByReviewCountDesc(
-              product.getCategoryId(), product.getId(), pageable);
+              product.getCategory().getId(), product.getId(), pageable);
 
         return relatedProducts.stream()
                 .map(ProductResponse::from)
