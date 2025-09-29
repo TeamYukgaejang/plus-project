@@ -24,9 +24,8 @@ public class Category extends BaseRemovableEntity {
     @Column(nullable = false, length = 100)
     private String description;
 
-//    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Product> products = new ArrayList<>();
-
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products = new ArrayList<>();
 
     @Builder
     private Category(Long id, String name, String description) {
