@@ -28,7 +28,7 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     }
 
     @Override
-    public List<ProductResponse> getRelatedProducts(Long productId, String sort, int limit) {
+    public List<ProductResponse> getRelatedProducts(Long productId, int limit) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new GlobalException(ProductErrorCode.PRODUCT_NOT_FOUND));
 
