@@ -1,6 +1,6 @@
 package org.example.plusproject.domain.product.service.command;
 
-import org.example.plusproject.common.exception.GlobalException;
+import org.example.plusproject.domain.category.entity.Category;
 import org.example.plusproject.domain.product.exception.ProductErrorCode;
 import org.example.plusproject.domain.product.exception.ProductException;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,11 +22,24 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     @Transactional
     public ProductResponse createProduct(ProductRequest productRequest) {
 
+        // 상품 설명 필수 검증
+        if (productRequest.getContent() == null || productRequest.getContent().trim().isEmpty()) {
+            throw new ProductException(ProductErrorCode.INVALID_PRODUCT_CONTENT);
+        }
+
+        // 상품 가격 0원 이상 검증
+        if (productRequest.getPrice() == null || productRequest.getPrice() <= 0) {
+            throw new ProductException(ProductErrorCode.INVALID_PRODUCT_PRICE);
+        }
+
+        Category category = productRequest.getCategory();
+        Long categoryId = category.getId();
+
         Product product = Product.of(
                 productRequest.getName(),
                 productRequest.getPrice(),
                 productRequest.getContent(),
-                productRequest.getCategoryId()
+                category
         );
 
         Product savedProduct = productRepository.save(product);
@@ -45,7 +58,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
                 productRequest.getName(),
                 productRequest.getPrice(),
                 productRequest.getContent(),
-                productRequest.getCategoryId()
+                productRequest.getCategory()
         );
 
         return ProductResponse.from(product);
