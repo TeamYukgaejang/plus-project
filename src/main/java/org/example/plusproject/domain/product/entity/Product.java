@@ -47,4 +47,11 @@ public class Product extends BaseRemovableEntity {
     public static Product of(String name, int price, String content, long categoryId) {
         return new Product(name, price, content, 0, categoryId);
     }
+
+    public void update(String name, int price, String content, Long categoryId) {
+        this.name = name;
+        this.price = price;
+        this.content = content;
+        this.categoryId = categoryId;
+    }
 }

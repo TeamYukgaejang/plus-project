@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductCreateRequest {
+public class ProductRequest {
 
     @NotNull
     private Long categoryId; // 실제 Category 엔티티 없이 ID만 저장
@@ -28,7 +28,7 @@ public class ProductCreateRequest {
     @Size(max = 1000)
     private String content;
 
-    public static ProductCreateRequest of(Long categoryId, String name, Integer price, String content) {
-        return new ProductCreateRequest(categoryId, name, price, content);
+    public static ProductRequest of(Long categoryId, String name, Integer price, String content) {
+        return new ProductRequest(categoryId, name, price, content);
     }
 }
