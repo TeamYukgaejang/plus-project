@@ -44,4 +44,16 @@ public class SearchController {
                 searchQueryService.getPopularKeywords()
         );
     }
+
+    // v2 검색 조회
+    @GetMapping("/v2/search")
+    public ApiResponse<PageResponse<ProductSearchResponse>> searchProductsV2(
+            @RequestParam String keyword,
+            Pageable pageable
+    ) {
+        Page<ProductSearchResponse> results = searchQueryService.searchV2(keyword, pageable);
+        searchCommandService.saveOrIncreaseKeyword(keyword);
+        return ApiResponse.of(SearchSuccessCode.SEARCH_SUCCESS, PageResponse.fromPage(results));
+    }
+
 }
