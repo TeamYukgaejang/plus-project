@@ -5,6 +5,7 @@ import org.example.plusproject.common.exception.GlobalException;
 import org.example.plusproject.domain.product.dto.response.ProductResponse;
 import org.example.plusproject.domain.product.entity.Product;
 import org.example.plusproject.domain.product.exception.ProductErrorCode;
+import org.example.plusproject.domain.product.exception.ProductException;
 import org.example.plusproject.domain.product.repository.ProductRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     @Override
     public ProductResponse getProductById(Long productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new GlobalException(ProductErrorCode.PRODUCT_NOT_FOUND));
+                .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
         return ProductResponse.from(product);
     }
 
