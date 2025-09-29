@@ -9,10 +9,12 @@ import org.example.plusproject.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -41,19 +43,25 @@ class UserCommandServiceImplTest {
     void 회원가입_성공() {
         // 준비
         SignUpRequestDto requestDto = new SignUpRequestDto("test@test.com", "password123!", "nickname");
+        String encodedPassword = "encodedPassword";
+
         when(userRepository.existsByEmail(requestDto.getEmail())).thenReturn(false);
         when(userRepository.existsByNickname(requestDto.getNickname())).thenReturn(false);
-        when(passwordEncoder.encode(requestDto.getPassword())).thenReturn("encodedPassword");
-        when(userRepository.save(any(User.class))).thenReturn(User.builder().build());
+        when(passwordEncoder.encode(requestDto.getPassword())).thenReturn(encodedPassword);
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // 실행
         userCommandService.signUp(requestDto);
 
         // 검증
-        verify(userRepository).existsByEmail(requestDto.getEmail());
-        verify(userRepository).existsByNickname(requestDto.getNickname());
-        verify(passwordEncoder).encode(requestDto.getPassword());
-        verify(userRepository).save(any(User.class));
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+        User capturedUser = userCaptor.getValue();
+
+        assertThat(capturedUser.getEmail()).isEqualTo(requestDto.getEmail());
+        assertThat(capturedUser.getPassword()).isEqualTo(encodedPassword);
+        assertThat(capturedUser.getNickname()).isEqualTo(requestDto.getNickname());
+        assertThat(capturedUser.getRole()).isEqualTo(Role.USER);
     }
 
     @Test
@@ -99,11 +107,13 @@ class UserCommandServiceImplTest {
         // 준비
         LoginRequestDto requestDto = new LoginRequestDto("test@test.com", "password123!");
         User user = User.of("test@test.com", "encodedPassword", "nickname", Role.USER);
+        // 실제 User 객체는 ID를 가지므로 테스트에서도 ID를 설정해주는 것이 좋습니다.
+        org.springframework.test.util.ReflectionTestUtils.setField(user, "id", 1L);
         String expectedToken = "jwt-token";
 
         when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(requestDto.getPassword(), user.getPassword())).thenReturn(true);
-        when(jwtUtil.createToken(any(), any(), any())).thenReturn(expectedToken);
+        when(jwtUtil.createToken(user.getId(), user.getEmail(), user.getRole())).thenReturn(expectedToken);
 
         // 실행
         String token = userCommandService.login(requestDto);
@@ -147,7 +157,7 @@ class UserCommandServiceImplTest {
     void 회원탈퇴_성공() {
         // 준비
         Long userId = 1L;
-        User user = User.of("test@test.com", "encodedPassword", "nickname", Role.USER);
+        User user = spy(User.of("test@test.com", "encodedPassword", "nickname", Role.USER));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
         // 실행
@@ -155,6 +165,7 @@ class UserCommandServiceImplTest {
 
         // 검증
         verify(userRepository).findById(userId);
+        verify(user).delete();
     }
 
     @Test
