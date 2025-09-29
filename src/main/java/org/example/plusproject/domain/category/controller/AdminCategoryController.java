@@ -1,7 +1,6 @@
 package org.example.plusproject.domain.category.controller;
 
 import jakarta.validation.Valid;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.domain.category.dto.request.CategoryCreateRequest;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/categories")
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 public class AdminCategoryController {
 
     private final CategoryCommandService categoryCommandService;
@@ -41,5 +40,15 @@ public class AdminCategoryController {
         return ResponseEntity
                 .status(CategorySuccessCode.CATEGORY_UPDATED.getHttpStatus())
                 .body(ApiResponse.of(CategorySuccessCode.CATEGORY_UPDATED, response));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Long id) {
+
+        categoryCommandService.deleteCategory(id);
+
+        return ResponseEntity
+                .status(CategorySuccessCode.CATEGORY_DELETED.getHttpStatus())
+                .body(ApiResponse.of(CategorySuccessCode.CATEGORY_DELETED, null));
     }
 }
