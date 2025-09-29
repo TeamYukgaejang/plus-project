@@ -6,13 +6,14 @@ import org.example.plusproject.common.consts.SuccessCode;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.domain.category.dto.request.CategoryCreateRequest;
 import org.example.plusproject.domain.category.dto.response.CategoryResponse;
+import org.example.plusproject.domain.category.exception.CategorySuccessCode;
 import org.example.plusproject.domain.category.service.command.CategoryCommandService;
+import org.example.plusproject.domain.category.service.query.CategoryQueryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/categories")
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CategoryController {
 
     private final CategoryCommandService categoryCommandService;
+    private final CategoryQueryService categoryQueryService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<CategoryResponse>> createCategory(
@@ -28,7 +30,25 @@ public class CategoryController {
         CategoryResponse response = categoryCommandService.createCategory(request);
 
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(ApiResponse.of(SuccessCode.REQUEST_SUCCESS, response));
+                .status(CategorySuccessCode.CATEGORY_CREATED.getHttpStatus())
+                .body(ApiResponse.of(CategorySuccessCode.CATEGORY_CREATED, response));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getAllCategories() {
+        List<CategoryResponse> response = categoryQueryService.getAllCategories();
+
+        return ResponseEntity
+                .status(CategorySuccessCode.CATEGORIES_FETCHED.getHttpStatus())
+                .body(ApiResponse.of(CategorySuccessCode.CATEGORIES_FETCHED, response));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(@PathVariable Long id) {
+        CategoryResponse response = categoryQueryService.getCategoryById(id);
+
+        return ResponseEntity
+                .status(CategorySuccessCode.CATEGORY_FETCHED.getHttpStatus())
+                .body(ApiResponse.of(CategorySuccessCode.CATEGORY_FETCHED, response));
     }
 }
