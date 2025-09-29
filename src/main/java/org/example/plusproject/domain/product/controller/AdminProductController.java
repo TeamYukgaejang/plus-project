@@ -2,10 +2,10 @@ package org.example.plusproject.domain.product.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.plusproject.common.consts.SuccessCode;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.domain.product.dto.request.ProductCreateRequest;
 import org.example.plusproject.domain.product.dto.response.ProductResponse;
+import org.example.plusproject.domain.product.exception.ProductSuccessCode;
 import org.example.plusproject.domain.product.service.command.ProductCommandService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +29,6 @@ public class AdminProductController {
         ProductResponse productResponse = productCommandService.createProduct(productCreateRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                ApiResponse.of(SuccessCode.PRODUCT_CREATED, productResponse));
+                ApiResponse.of(ProductSuccessCode.PRODUCT_CREATED, productResponse));
     }
 }
