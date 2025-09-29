@@ -44,7 +44,7 @@ public class AdminProductController {
     // 상품 삭제
     @DeleteMapping("/{productId}")
     public ResponseEntity<ApiResponse<ProductResponse>> deleteProduct(
-            @Valid @PathVariable Long productId
+            @PathVariable Long productId
     ){
         ProductResponse productResponse = productCommandService.deleteProduct(productId);
 
