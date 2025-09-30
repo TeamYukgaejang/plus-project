@@ -1,6 +1,7 @@
 package org.example.plusproject.domain.user.service.command;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.common.jwt.JwtUtil;
@@ -93,17 +94,21 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     @Override
     public void logout(String accessToken) {
-        // 토큰 유효성 검증 및 클레임 추출
-        Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
+        try {
+            // 토큰 유효성 검증 및 클레임 추출
+            Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
 
-        // 토큰의 만료 시간 파싱
-        Date expiration = claims.getExpiration();
-        long now = new Date().getTime();
-        long remainingTime = expiration.getTime() - now;
+            // 토큰의 만료 시간 파싱
+            Date expiration = claims.getExpiration();
+            long now = new Date().getTime();
+            long remainingTime = expiration.getTime() - now;
 
-        // 만료 시간이 남아있다면 Redis에 블랙리스트로 추가
-        if (remainingTime > 0) {
-            redisTemplate.opsForValue().set(accessToken, "logout", remainingTime, TimeUnit.MILLISECONDS);
+            // 만료 시간이 남아있다면 Redis에 블랙리스트로 추가
+            if (remainingTime > 0) {
+                redisTemplate.opsForValue().set(accessToken, "logout", remainingTime, TimeUnit.MILLISECONDS);
+            }
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰은 이미 유효하지 않으므로 별도의 처리가 필요 없습니다.
         }
     }
 }

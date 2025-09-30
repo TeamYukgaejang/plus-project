@@ -50,8 +50,10 @@ public class UserController {
 
     @PostMapping("/auth/logout")
     public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader(JwtUtil.AUTHORIZATION_HEADER) String authorizationHeader) {
-        String accessToken = authorizationHeader.substring(JwtUtil.BEARER_PREFIX.length());
-        userCommandService.logout(accessToken);
+        if (authorizationHeader != null && authorizationHeader.startsWith(JwtUtil.BEARER_PREFIX)) {
+            String accessToken = authorizationHeader.substring(JwtUtil.BEARER_PREFIX.length());
+            userCommandService.logout(accessToken);
+        }
         return ResponseEntity.ok(ApiResponse.of(UserSuccessCode.LOGOUT_SUCCESS, null));
     }
 }
