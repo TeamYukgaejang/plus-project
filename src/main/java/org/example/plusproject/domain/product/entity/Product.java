@@ -9,7 +9,6 @@ import org.example.plusproject.domain.review.entity.Review;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Entity
 @Table(name = "products")
 @Getter
