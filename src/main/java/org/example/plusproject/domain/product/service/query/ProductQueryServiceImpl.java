@@ -33,11 +33,10 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     // 인기 상품 조회(리뷰순)
     @Override
     @Cacheable(
-            value = "relatedProducts",                      // CacheConfig에서 정의한 이름
+            value = "relatedProducts",                      // Redis에 저장
             key = "#productId + '_' + #llimit"
     )
     public List<ProductResponse> getRelatedProducts(Long productId, int limit) {
-
         log.info("===== DB 조회 발생! productId={}, limit={} =====", productId, limit);
 
         Product product = productRepository.findById(productId)
