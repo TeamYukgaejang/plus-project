@@ -1,9 +1,12 @@
 package org.example.plusproject.domain.product.service.command;
 
 import org.example.plusproject.domain.category.entity.Category;
-import org.example.plusproject.domain.category.service.query.CategoryQueryService;
+import org.example.plusproject.domain.category.exception.CategoryErrorCode;
+import org.example.plusproject.domain.category.exception.CategoryException;
+import org.example.plusproject.domain.category.repository.CategoryRepository;
 import org.example.plusproject.domain.product.exception.ProductErrorCode;
 import org.example.plusproject.domain.product.exception.ProductException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.domain.product.dto.request.ProductRequest;
@@ -17,14 +20,18 @@ import org.springframework.stereotype.Service;
 public class ProductCommandServiceImpl implements ProductCommandService {
 
     private final ProductRepository productRepository;
-    private final CategoryQueryService  categoryQueryService;
+    private final CategoryRepository categoryRepository;
 
     // 상품 등록
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse createProduct(ProductRequest productRequest) {
 
-        Category category = productRequest.getCategory();
+        Long categoryId = productRequest.getCategoryId();
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryException(CategoryErrorCode.CATEGORY_NOT_FOUND));
 
         Product product = Product.of(
                 productRequest.getName(),
@@ -41,6 +48,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     // 상품 정보 수정
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse updateProduct(Long productId, ProductRequest productRequest) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
@@ -49,7 +57,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
                 productRequest.getName(),
                 productRequest.getPrice(),
                 productRequest.getContent(),
-                productRequest.getCategory()
+                product.getCategory()
         );
 
         return ProductResponse.from(product);
@@ -58,6 +66,7 @@ public class ProductCommandServiceImpl implements ProductCommandService {
     // 상품 삭제
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductResponse deleteProduct(Long productId) {
         Product product = productRepository.findByIdIncludingDeleted(productId)
                 .orElseThrow(() -> new ProductException(ProductErrorCode.PRODUCT_NOT_FOUND));
