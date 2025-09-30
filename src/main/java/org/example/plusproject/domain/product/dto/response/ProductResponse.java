@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.example.plusproject.domain.category.entity.Category;
 import org.example.plusproject.domain.product.entity.Product;
 
 import java.time.LocalDateTime;
@@ -20,7 +19,8 @@ public class ProductResponse {
     private String name;
     private Integer price;
     private String content;
-    private Category category;
+    private Long categoryId;
+    private int reviewCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
@@ -31,7 +31,8 @@ public class ProductResponse {
                 .name(product.getName())
                 .price(product.getPrice())
                 .content(product.getContent())
-                .category(product.getCategory())
+                .categoryId(product.getCategory().getId())
+                .reviewCount(product.getReviewCount())
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
                 .deletedAt(product.getDeletedAt())
