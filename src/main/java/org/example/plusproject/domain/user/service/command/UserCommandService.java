@@ -25,4 +25,6 @@ public interface UserCommandService {
      * @param userId 탈퇴할 사용자의 ID
      */
     void deleteUser(Long userId);
+
+    void logout(String accessToken);
 }

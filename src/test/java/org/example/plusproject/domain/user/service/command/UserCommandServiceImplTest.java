@@ -1,5 +1,6 @@
 package org.example.plusproject.domain.user.service.command;
 
+import io.jsonwebtoken.Claims;
 import org.example.plusproject.common.jwt.JwtUtil;
 import org.example.plusproject.domain.user.dto.request.LoginRequestDto;
 import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
@@ -18,12 +19,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,11 +49,38 @@ class UserCommandServiceImplTest {
     @Mock
     private JwtUtil jwtUtil;
 
+    @Mock
+    private StringRedisTemplate redisTemplate;
+
+    @Mock
+    private ValueOperations<String, String> valueOperations;
+
     private UserCommandServiceImpl userCommandService;
 
     @BeforeEach
     void setUp() {
-        userCommandService = new UserCommandServiceImpl(userRepository, userQueryService, passwordEncoder, jwtUtil);
+        userCommandService = new UserCommandServiceImpl(userRepository, userQueryService, passwordEncoder, jwtUtil, redisTemplate);
+    }
+
+    @Test
+    @DisplayName("로그아웃 성공")
+    void 로그아웃_성공() {
+        // 준비
+        String accessToken = "test-token";
+        long now = new Date().getTime();
+        Date expiration = new Date(now + 60000L); // 1분 후 만료
+
+        Claims claims = mock(Claims.class);
+
+        when(jwtUtil.getUserInfoFromToken(accessToken)).thenReturn(claims);
+        when(claims.getExpiration()).thenReturn(expiration);
+        when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+
+        // 실행
+        userCommandService.logout(accessToken);
+
+        // 검증
+        verify(valueOperations).set(eq(accessToken), eq("logout"), anyLong(), eq(TimeUnit.MILLISECONDS));
     }
 
     @Test

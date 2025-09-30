@@ -15,11 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.plusproject.common.security.JwtAuthenticationToken;
 import org.example.plusproject.domain.user.dto.security.AuthUser;
 import org.example.plusproject.domain.user.enums.Role;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -31,6 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     protected void doFilterInternal(
@@ -41,6 +44,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String tokenValue = jwtUtil.getJwtFromHeader(request);
 
         if (tokenValue != null) {
+            // 블랙리스트 확인
+            String blacklisted = redisTemplate.opsForValue().get(tokenValue);
+            if (!ObjectUtils.isEmpty(blacklisted)) {
+                log.error("로그아웃된 토큰입니다.");
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "로그아웃된 토큰입니다.");
+                return;
+            }
+
             try {
                 Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
                 setAuthentication(info);

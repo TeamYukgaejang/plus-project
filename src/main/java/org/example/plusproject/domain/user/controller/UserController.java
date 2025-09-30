@@ -17,6 +17,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,7 +49,11 @@ public class UserController {
     }
 
     @PostMapping("/auth/logout")
-    public ResponseEntity<ApiResponse<Void>> logout() {
+    public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader(JwtUtil.AUTHORIZATION_HEADER) String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith(JwtUtil.BEARER_PREFIX)) {
+            String accessToken = authorizationHeader.substring(JwtUtil.BEARER_PREFIX.length());
+            userCommandService.logout(accessToken);
+        }
         return ResponseEntity.ok(ApiResponse.of(UserSuccessCode.LOGOUT_SUCCESS, null));
     }
 }
