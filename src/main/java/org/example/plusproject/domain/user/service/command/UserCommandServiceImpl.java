@@ -1,5 +1,6 @@
 package org.example.plusproject.domain.user.service.command;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.common.jwt.JwtUtil;
@@ -15,9 +16,13 @@ import org.example.plusproject.domain.user.exception.UserNotFoundException;
 import org.example.plusproject.domain.user.exception.UserSuccessCode;
 import org.example.plusproject.domain.user.repository.UserRepository;
 import org.example.plusproject.domain.user.service.query.UserQueryService;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +32,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final UserQueryService userQueryService; // 조회(R) 작업을 위해 추가
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     @Transactional
@@ -83,5 +89,21 @@ public class UserCommandServiceImpl implements UserCommandService {
     public void deleteUser(Long userId) {
         User user = userQueryService.findUserById(userId);
         user.delete();
+    }
+
+    @Override
+    public void logout(String accessToken) {
+        // 토큰 유효성 검증 및 클레임 추출
+        Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
+
+        // 토큰의 만료 시간 파싱
+        Date expiration = claims.getExpiration();
+        long now = new Date().getTime();
+        long remainingTime = expiration.getTime() - now;
+
+        // 만료 시간이 남아있다면 Redis에 블랙리스트로 추가
+        if (remainingTime > 0) {
+            redisTemplate.opsForValue().set(accessToken, "logout", remainingTime, TimeUnit.MILLISECONDS);
+        }
     }
 }
