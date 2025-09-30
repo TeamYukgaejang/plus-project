@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,7 +59,7 @@ public class DummyDataInitializerTest {
                     "상품_" + i,
                     1000 + i,
                     "설명_" + i,
-                    0
+                    100 + i
             });
 
             if (i % batchSize == 0) {
