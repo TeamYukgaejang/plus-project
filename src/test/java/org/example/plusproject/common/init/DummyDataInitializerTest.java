@@ -67,6 +67,14 @@ public class DummyDataInitializerTest {
             }
         }
 
+        if (!batch.isEmpty()) {
+            jdbcTemplate.batchUpdate(
+                    "INSERT INTO products (category_id, name, price, content, review_count, created_at, updated_at) " +
+                            "VALUES (?, ?, ?, ?, ?, NOW(), NOW())",
+                    batch
+            );
+        }
+
         long end = System.currentTimeMillis();
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM products", Integer.class);
