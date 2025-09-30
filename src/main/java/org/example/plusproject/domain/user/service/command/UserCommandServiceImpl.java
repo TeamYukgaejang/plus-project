@@ -1,46 +1,58 @@
 package org.example.plusproject.domain.user.service.command;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
-import org.example.plusproject.common.consts.SuccessCode;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.common.jwt.JwtUtil;
 import org.example.plusproject.domain.user.dto.request.LoginRequestDto;
+import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
 import org.example.plusproject.domain.user.dto.response.SignUpResponseDto;
 import org.example.plusproject.domain.user.entity.User;
+import org.example.plusproject.domain.user.enums.Role;
+import org.example.plusproject.domain.user.exception.EmailDuplicatedException;
+import org.example.plusproject.domain.user.exception.LoginFailedException;
+import org.example.plusproject.domain.user.exception.NicknameDuplicatedException;
+import org.example.plusproject.domain.user.exception.UserNotFoundException;
+import org.example.plusproject.domain.user.exception.UserSuccessCode;
 import org.example.plusproject.domain.user.repository.UserRepository;
-import org.example.plusproject.domain.user.dto.request.SignUpRequestDto;
+import org.example.plusproject.domain.user.service.query.UserQueryService;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.example.plusproject.domain.user.enums.Role;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class UserCommandServiceImpl implements UserCommandService {
 
-    private final UserRepository userRepository;
+    private final UserRepository userRepository; // CUD 작업을 위해 유지
+    private final UserQueryService userQueryService; // 조회(R) 작업을 위해 추가
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     @Transactional
     public ApiResponse<SignUpResponseDto> signUp(SignUpRequestDto requestDto) {
         String email = requestDto.getEmail();
         String nickname = requestDto.getNickname();
-        String password = requestDto.getPassword();
 
         // 이메일 중복 확인
-        if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        if (userQueryService.existsByEmail(email)) {
+            throw new EmailDuplicatedException();
         }
 
         // 닉네임 중복 확인
-        if (userRepository.existsByNickname(nickname)) {
-            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+        if (userQueryService.existsByNickname(nickname)) {
+            throw new NicknameDuplicatedException();
         }
 
         // 비밀번호 암호화
-        String encodedPassword = passwordEncoder.encode(password);
+        String encodedPassword = passwordEncoder.encode(requestDto.getPassword());
 
         // User 객체 생성
         User user = User.of(email, encodedPassword, nickname, Role.USER);
@@ -49,7 +61,7 @@ public class UserCommandServiceImpl implements UserCommandService {
         User savedUser = userRepository.save(user);
 
         // DTO로 변환하여 ApiResponse에 담아 반환
-        return ApiResponse.of(SuccessCode.USER_CREATED, SignUpResponseDto.from(savedUser));
+        return ApiResponse.of(UserSuccessCode.USER_CREATED, SignUpResponseDto.from(savedUser));
     }
 
     @Override
@@ -57,10 +69,16 @@ public class UserCommandServiceImpl implements UserCommandService {
         String email = requestDto.getEmail();
         String password = requestDto.getPassword();
 
-        User user = userRepository.findByEmail(email).orElse(null);
+        User user;
+        try {
+            user = userQueryService.findUserByEmail(email);
+        } catch (UserNotFoundException e) {
+            // 사용자 존재 여부가 노출되지 않도록, 로그인 실패 예외를 던집니다.
+            throw new LoginFailedException();
+        }
 
-        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new LoginFailedException();
         }
 
         // JWT 생성 및 반환
@@ -70,9 +88,27 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Override
     @Transactional
     public void deleteUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-            () -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다.")
-        );
+        User user = userQueryService.findUserById(userId);
         user.delete();
+    }
+
+    @Override
+    public void logout(String accessToken) {
+        try {
+            // 토큰 유효성 검증 및 클레임 추출
+            Claims claims = jwtUtil.getUserInfoFromToken(accessToken);
+
+            // 토큰의 만료 시간 파싱
+            Date expiration = claims.getExpiration();
+            long now = new Date().getTime();
+            long remainingTime = expiration.getTime() - now;
+
+            // 만료 시간이 남아있다면 Redis에 블랙리스트로 추가
+            if (remainingTime > 0) {
+                redisTemplate.opsForValue().set(accessToken, "logout", remainingTime, TimeUnit.MILLISECONDS);
+            }
+        } catch (ExpiredJwtException e) {
+            // 만료된 토큰은 이미 유효하지 않으므로 별도의 처리가 필요 없습니다.
+        }
     }
 }

@@ -38,7 +38,8 @@ public class SecurityConfig {
         // 요청 권한 설정
         http.authorizeHttpRequests((authorizeHttpRequests) ->
             authorizeHttpRequests
-                .requestMatchers("/api/auth/**").permitAll() // /api/auth/ 로 시작하는 요청은 모두 접근 허용
+                .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll() // /api/auth/signup, /api/auth/login 요청은 모두 접근 허용
+                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // /api/v1/admin/ 으로 시작하는 요청은 ADMIN 권한 필요
                 .anyRequest().authenticated() // 그 외 모든 요청은 인증 처리
         );
 

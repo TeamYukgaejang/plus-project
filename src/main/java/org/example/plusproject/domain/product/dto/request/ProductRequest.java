@@ -7,14 +7,15 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.plusproject.domain.category.entity.Category;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductCreateRequest {
+public class ProductRequest {
 
     @NotNull
-    private Long categoryId; // 실제 Category 엔티티 없이 ID만 저장
+    private Category category;
 
     @NotBlank
     @Size(max = 100)
@@ -28,7 +29,7 @@ public class ProductCreateRequest {
     @Size(max = 1000)
     private String content;
 
-    public static ProductCreateRequest of(Long categoryId, String name, Integer price, String content) {
-        return new ProductCreateRequest(categoryId, name, price, content);
+    public static ProductRequest of(Category category, String name, Integer price, String content) {
+        return new ProductRequest(category, name, price, content);
     }
 }
