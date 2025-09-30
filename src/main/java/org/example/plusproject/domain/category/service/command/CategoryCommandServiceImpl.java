@@ -8,6 +8,7 @@ import org.example.plusproject.domain.category.entity.Category;
 import org.example.plusproject.domain.category.exception.CategoryErrorCode;
 import org.example.plusproject.domain.category.exception.CategoryException;
 import org.example.plusproject.domain.category.repository.CategoryRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ public class CategoryCommandServiceImpl implements CategoryCommandService {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse createCategory(CategoryCreateRequest request) {
 
         if (categoryRepository.existsByNameAndDeletedAtIsNull(request.getName())) {
@@ -33,6 +35,7 @@ public class CategoryCommandServiceImpl implements CategoryCommandService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse updateCategory(Long id, CategoryUpdateRequest request) {
 
         Category category = categoryRepository.findByIdAndDeletedAtIsNullOrElseThrow(id);
@@ -47,6 +50,7 @@ public class CategoryCommandServiceImpl implements CategoryCommandService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(Long id) {
 
         Category category = categoryRepository.findByIdAndDeletedAtIsNullOrElseThrow(id);
