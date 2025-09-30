@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.plusproject.common.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -39,7 +40,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorizeHttpRequests) ->
                 authorizeHttpRequests
                         .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll() // /api/auth/signup, /api/auth/login 요청은 모두 접근 허용
-                        .requestMatchers("/api/v1/products/**").permitAll() // 상품 조회 API는 인증 불필요
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/**").permitAll() // 상품 조회 API는 인증 불필요
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // /api/v1/admin/ 으로 시작하는 요청은 ADMIN 권한 필요
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증 처리
         );
