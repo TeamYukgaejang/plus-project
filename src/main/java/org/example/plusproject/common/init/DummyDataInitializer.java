@@ -1,5 +1,7 @@
 package org.example.plusproject.common.init;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
@@ -16,6 +18,8 @@ import java.util.List;
 @Profile("dev")
 @Component
 public class DummyDataInitializer implements ApplicationRunner {
+
+    private static final Logger log = LoggerFactory.getLogger(DummyDataInitializer.class);
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -78,6 +82,6 @@ public class DummyDataInitializer implements ApplicationRunner {
 
         long end = System.currentTimeMillis();
 
-        System.out.println("더미 데이터 " + total + "건, 소요 시간(ms): " + (end - start));
+        log.info("더미 데이터 {}건 생성 완료, 소요 시간(ms): {}", total, (end - start));
     }
 }

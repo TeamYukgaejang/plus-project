@@ -2,6 +2,8 @@ package org.example.plusproject.common.init;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles("test")
 public class DummyDataInitializerTest {
+
+    private static final Logger log = LoggerFactory.getLogger(DummyDataInitializerTest.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -79,8 +83,8 @@ public class DummyDataInitializerTest {
 
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM products", Integer.class);
 
-        System.out.println("총 소요 시간(ms) = " + (end - start));
-        System.out.println("products 총 개수 = " + count);
+        log.info("총 소요 시간(ms) = {}", (end - start));
+        log.info("products 총 개수 = {}", count);
 
         assertThat(count).isEqualTo(total);
     }
