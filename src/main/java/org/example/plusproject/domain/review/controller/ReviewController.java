@@ -3,6 +3,8 @@ package org.example.plusproject.domain.review.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.common.dto.response.ApiResponse;
+import org.example.plusproject.domain.review.dto.request.ReviewSaveRequest;
+import org.example.plusproject.domain.review.dto.response.ReviewSaveResponse;
 import org.example.plusproject.domain.review.service.command.ReviewCommandServiceImpl;
 import org.example.plusproject.domain.review.service.query.ReviewService;
 import org.example.plusproject.domain.user.dto.security.AuthUser;
@@ -18,6 +20,7 @@ public class ReviewController {
 
     private final ReviewCommandServiceImpl reviewCommandService;
 
+    // 리뷰 저장
     @PostMapping("/products/{productId}/reviews")
     public ResponseEntity<ApiResponse<ReviewSaveResponse>> saveReview(
             @Valid @RequestBody ReviewSaveRequest request,
