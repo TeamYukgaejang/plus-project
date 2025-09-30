@@ -42,4 +42,9 @@ public class Review extends BaseRemovableEntity {
                 user,
                 product);
     }
+
+    public void update(String content, int point) {
+        this.content = content;
+        this.point = point;
+    }
 }

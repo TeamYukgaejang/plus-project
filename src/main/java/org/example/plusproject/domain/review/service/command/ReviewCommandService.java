@@ -10,6 +10,17 @@ public interface ReviewCommandService {
     ApiResponse<ReviewSaveResponse> saveReview(
             ReviewSaveRequest request,
             AuthUser authUser,
-            Long productId);
+            Long productId
+    );
 
+    ApiResponse<ReviewSaveResponse> updateReview(
+            ReviewSaveRequest request,
+            Long reviewId,
+            AuthUser authUser
+    );
+
+    ApiResponse<Void> deleteReview(
+            Long reviewId,
+            AuthUser authUser
+    );
 }
