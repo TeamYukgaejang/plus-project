@@ -34,7 +34,7 @@ public class ProductQueryServiceImpl implements ProductQueryService {
     @Override
     @Cacheable(
             value = "relatedProducts",                      // Redis에 저장
-            key = "#productId + '_' + #llimit"
+            key = "#productId + '_' + #limit"
     )
     public List<ProductResponse> getRelatedProducts(Long productId, int limit) {
         log.info("===== DB 조회 발생! productId={}, limit={} =====", productId, limit);
