@@ -32,15 +32,16 @@ public class SecurityConfig {
 
         // 세션 관리 설정: STATELESS로 설정
         http.sessionManagement((sessionManagement) ->
-            sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         );
 
         // 요청 권한 설정
         http.authorizeHttpRequests((authorizeHttpRequests) ->
-            authorizeHttpRequests
-                .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll() // /api/auth/signup, /api/auth/login 요청은 모두 접근 허용
-                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // /api/v1/admin/ 으로 시작하는 요청은 ADMIN 권한 필요
-                .anyRequest().authenticated() // 그 외 모든 요청은 인증 처리
+                authorizeHttpRequests
+                        .requestMatchers("/api/auth/signup", "/api/auth/login").permitAll() // /api/auth/signup, /api/auth/login 요청은 모두 접근 허용
+                        .requestMatchers("/api/v1/products/**").permitAll() // 상품 조회 API는 인증 불필요
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN") // /api/v1/admin/ 으로 시작하는 요청은 ADMIN 권한 필요
+                        .anyRequest().authenticated() // 그 외 모든 요청은 인증 처리
         );
 
         // JWT 방식에서는 필요 없는 formLogin, httpBasic 비활성화
