@@ -1,6 +1,5 @@
 package org.example.plusproject.common.init;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +57,7 @@ public class DummyDataInitializerTest {
                     "상품_" + i,
                     1000 + i,
                     "설명_" + i,
-                    0
+                    100 + i
             });
 
             if (i % batchSize == 0) {

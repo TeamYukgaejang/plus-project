@@ -54,11 +54,11 @@ public class DummyDataInitializer implements ApplicationRunner {
 
         for (int i = 1; i <= total; i++) {
             batch.add(new Object[]{
-                    categoryId,                                  // category_id
+                    categoryId,                             // category_id
                     "더미 상품명_" + i,                        // name
-                    1000 + i,                             // price
-                    "더미 설명_" + i,      // content
-                    0                                     // review_count
+                    1000 + i,                               // price
+                    "더미 설명_" + i,                         // content
+                    100 + i                                 // review_count
             });
 
             // 배치 크기 채워지면 실행
