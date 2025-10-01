@@ -33,7 +33,7 @@ public class ReviewController {
                 .body(reviewCommandService.saveReview(request, authUser, productId));
     }
 
-    @GetMapping("/product/{productId}/reviews")
+    @GetMapping("/products/{productId}/reviews")
     public ResponseEntity<ApiResponse<ReviewPageResponse>> getPageReview(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
