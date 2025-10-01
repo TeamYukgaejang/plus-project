@@ -37,7 +37,7 @@ public class LikeCommandServiceImpl implements LikeCommandService {
 
         String redisKey = "review:" + reviewId + ":likeCount";
 
-        if(!user.getId().equals(review.getUser().getId())) {
+        if(user.getId().equals(review.getUser().getId())) {
             throw new GlobalException(LikeErrorCode.LIKE_OWN_REVIEW_FORBIDDEN);
         }
 
