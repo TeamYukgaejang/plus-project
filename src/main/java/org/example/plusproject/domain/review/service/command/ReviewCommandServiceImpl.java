@@ -3,7 +3,10 @@ package org.example.plusproject.domain.review.service.command;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.common.exception.GlobalException;
+import org.example.plusproject.domain.like.service.query.LikeQueryServiceImpl;
 import org.example.plusproject.domain.product.entity.Product;
+import org.example.plusproject.domain.product.exception.ProductErrorCode;
+import org.example.plusproject.domain.product.repository.ProductRepository;
 import org.example.plusproject.domain.product.service.query.ProductQueryServiceImpl;
 import org.example.plusproject.domain.review.consts.ReviewErrorCode;
 import org.example.plusproject.domain.review.consts.ReviewSuccessCode;
@@ -23,15 +26,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewCommandServiceImpl implements ReviewCommandService {
 
     private final ReviewRepository reviewRepository;
-
+    private final LikeQueryServiceImpl likeService;
     private final UserQueryServiceImpl userService;
-    private final ProductQueryServiceImpl productService;
+    private final ProductRepository  productRepository;
 
     @Override
     @Transactional
     public ApiResponse<ReviewResponse> saveReview(ReviewSaveRequest request, AuthUser authUser, Long productId) {
         User user = userService.findUserById(authUser.getUserId());
-        Product product = productService.findProductById(productId);
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new GlobalException(ProductErrorCode.PRODUCT_NOT_FOUND)
+        );
 
         Review savedReview = reviewRepository.save(
                 Review.of(
@@ -44,9 +49,9 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
         return ApiResponse.of(
                 ReviewSuccessCode.REVIEW_CREATED,
-                ReviewResponse.from(
+                ReviewResponse.of(
                         savedReview,
-                        0L
+                        likeService.getLikeCount(savedReview.getId())
                 )
         );
     }
@@ -67,9 +72,9 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
         return ApiResponse.of(
                 ReviewSuccessCode.REVIEW_UPDATED,
-                ReviewResponse.from(
+                ReviewResponse.of(
                         review,
-                        0L
+                        likeService.getLikeCount(review.getId())
                 )
         );
     }

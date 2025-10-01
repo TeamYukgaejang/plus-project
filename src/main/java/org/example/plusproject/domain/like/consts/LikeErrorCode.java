@@ -1,6 +1,5 @@
 package org.example.plusproject.domain.like.consts;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.common.consts.ErrorCode;

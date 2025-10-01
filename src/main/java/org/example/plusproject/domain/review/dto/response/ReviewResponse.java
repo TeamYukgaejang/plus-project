@@ -3,10 +3,7 @@ package org.example.plusproject.domain.review.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.example.plusproject.domain.product.entity.Product;
 import org.example.plusproject.domain.review.entity.Review;
-import org.example.plusproject.domain.user.entity.User;
-
 import java.time.LocalDateTime;
 
 @Getter

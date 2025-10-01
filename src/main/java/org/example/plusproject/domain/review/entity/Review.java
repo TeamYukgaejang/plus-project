@@ -49,14 +49,4 @@ public class Review extends BaseRemovableEntity {
         this.content = content;
         this.point = point;
     }
-
-    public void incrLike() {
-        this.likeCount++;
-    }
-
-    public void decrLike() {
-        if (this.likeCount > 0) {
-            this.likeCount--;
-        }
-    }
 }

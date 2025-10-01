@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class LikeController {
 
     private final LikeCommandServiceImpl likeCommandService;
-    private final LikeQueryServiceImpl likeQueryService;
 
     @PostMapping("/reviews/{reviewId}/likes")
     public ResponseEntity<ApiResponse<Object>> toggleLike(

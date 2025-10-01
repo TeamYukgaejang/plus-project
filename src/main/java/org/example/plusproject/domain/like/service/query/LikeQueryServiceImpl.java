@@ -2,8 +2,6 @@ package org.example.plusproject.domain.like.service.query;
 
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.domain.like.repository.LikeRepository;
-import org.example.plusproject.domain.review.entity.Review;
-import org.example.plusproject.domain.review.service.query.ReviewQueryService;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
