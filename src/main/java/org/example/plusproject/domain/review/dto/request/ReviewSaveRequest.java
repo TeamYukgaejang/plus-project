@@ -8,7 +8,6 @@ import lombok.Getter;
 @Getter
 public class ReviewSaveRequest {
 
-    @NotBlank
     @Min(1) @Max(5)
     private int point;
 
