@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class ReviewController {
 
-    private final ReviewCommandServiceImpl reviewCommandService;
-    private final ReviewQueryServiceImpl reviewQueryService;
+    private final ReviewCommandService reviewCommandService;
+    private final ReviewQueryService reviewQueryService;
 
     // 리뷰 저장
     @PostMapping("/products/{productId}/reviews")
