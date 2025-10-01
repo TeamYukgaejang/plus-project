@@ -8,9 +8,11 @@ import org.example.plusproject.domain.user.entity.User;
 
 @Entity
 @Getter
-@Table(name = "reviews")
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(
+        name = "reviews", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "product_id"})
+) // 유니크 제약조건 - 해당 조합과 같은 조합의 레코드는 등록 불가
 public class Review extends BaseRemovableEntity {
 
     @Id
@@ -28,12 +30,23 @@ public class Review extends BaseRemovableEntity {
     private Product product;
 
     @Builder
-    private Review(String content, int point) {
+    private Review(String content, int point, User user, Product product) {
         this.content = content;
         this.point = point;
+        this.user = user;
+        this.product = product;
     }
 
-    public static Review of(String content, int point) {
-        return new Review(content, point);
+    public static Review of(String content, int point, User user, Product product) {
+        return new Review(
+                content,
+                point,
+                user,
+                product);
+    }
+
+    public void update(String content, int point) {
+        this.content = content;
+        this.point = point;
     }
 }
