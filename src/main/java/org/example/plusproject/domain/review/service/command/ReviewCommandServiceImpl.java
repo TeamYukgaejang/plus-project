@@ -92,7 +92,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
         review.delete();
 
-        return null;
+        return ApiResponse.of(ReviewSuccessCode.REVIEW_DELETED, null);
     }
 
 }
