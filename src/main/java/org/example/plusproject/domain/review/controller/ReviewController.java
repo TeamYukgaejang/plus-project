@@ -4,11 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.domain.review.dto.request.ReviewSaveRequest;
-import org.example.plusproject.domain.review.dto.response.ReviewSaveResponse;
+import org.example.plusproject.domain.review.dto.response.ReviewPageResponse;
+import org.example.plusproject.domain.review.dto.response.ReviewResponse;
 import org.example.plusproject.domain.review.service.command.ReviewCommandServiceImpl;
-import org.example.plusproject.domain.review.service.query.ReviewService;
+import org.example.plusproject.domain.review.service.query.ReviewQueryServiceImpl;
 import org.example.plusproject.domain.user.dto.security.AuthUser;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +19,11 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController {
 
     private final ReviewCommandServiceImpl reviewCommandService;
+    private final ReviewQueryServiceImpl reviewQueryService;
 
     // 리뷰 저장
     @PostMapping("/products/{productId}/reviews")
-    public ResponseEntity<ApiResponse<ReviewSaveResponse>> saveReview(
+    public ResponseEntity<ApiResponse<ReviewResponse>> saveReview(
             @Valid @RequestBody ReviewSaveRequest request,
             @AuthenticationPrincipal AuthUser authUser,
             @PathVariable Long productId
@@ -33,14 +34,14 @@ public class ReviewController {
     }
 
     @GetMapping("/product/{productId}/reviews")
-    public ResponseEntity<ApiResponse<Page<ReviewPageResponse>>> getPageReview(
+    public ResponseEntity<ApiResponse<ReviewPageResponse>> getPageReview(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @PathVariable Long productId
     ) {
         return ResponseEntity
                 .status(200)
-                .body(reviewService.getPageReview(page, size, productId));
+                .body(reviewQueryService.getPageReview(page, size, productId));
     }
 
     @GetMapping("/reviews/{reviewId}")
@@ -49,11 +50,11 @@ public class ReviewController {
     ) {
         return ResponseEntity
                 .status(200)
-                .body(reviewService.getReview(reviewId));
+                .body(reviewQueryService.getReview(reviewId));
     }
 
     @PutMapping("/reviews/{reviewId}")
-    public ResponseEntity<ApiResponse<ReviewSaveResponse>> updateReview(
+    public ResponseEntity<ApiResponse<ReviewResponse>> updateReview(
             @Valid @RequestBody ReviewSaveRequest request,
             @PathVariable Long reviewId,
             @AuthenticationPrincipal AuthUser authUser

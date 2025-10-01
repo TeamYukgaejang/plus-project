@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @RequiredArgsConstructor
-public class ReviewSaveResponse {
+public class ReviewResponse {
 
     private final Long id;
     private final int point;
@@ -21,19 +21,22 @@ public class ReviewSaveResponse {
     private final String productName;
     private final Long userId;
     private final String nickname;
-    private final Long reviewId;
+    private final Long likes;
     private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
-    public static ReviewSaveResponse of(Review review, Product product, User user) {
-        return  ReviewSaveResponse.builder()
+    public static ReviewResponse of(Review review, Long likeCount) {
+        return ReviewResponse.builder()
                 .id(review.getId())
                 .point(review.getPoint())
                 .context(review.getContent())
-                .productId(product.getId())
-                .productName(product.getName())
-                .userId(user.getId())
-                .nickname(user.getNickname())
+                .productId(review.getProduct().getId())
+                .productName(review.getProduct().getName())
+                .userId(review.getUser().getId())
+                .nickname(review.getUser().getNickname())
+                .likes(likeCount)
                 .createdAt(review.getCreatedAt())
+                .updatedAt(review.getUpdatedAt())
                 .build();
     }
 }

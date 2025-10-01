@@ -8,6 +8,7 @@ import org.example.plusproject.domain.product.service.query.ProductQueryServiceI
 import org.example.plusproject.domain.review.consts.ReviewErrorCode;
 import org.example.plusproject.domain.review.consts.ReviewSuccessCode;
 import org.example.plusproject.domain.review.dto.request.ReviewSaveRequest;
+import org.example.plusproject.domain.review.dto.response.ReviewResponse;
 import org.example.plusproject.domain.review.dto.response.ReviewSaveResponse;
 import org.example.plusproject.domain.review.entity.Review;
 import org.example.plusproject.domain.review.repository.ReviewRepository;
@@ -28,11 +29,11 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
     @Override
     @Transactional
-    public ApiResponse<ReviewSaveResponse> saveReview(ReviewSaveRequest request, AuthUser authUser, Long productId) {
+    public ApiResponse<ReviewResponse> saveReview(ReviewSaveRequest request, AuthUser authUser, Long productId) {
         User user = userService.findUserById(authUser.getUserId());
         Product product = productService.findProductById(productId);
 
-        Review SavedReview = reviewRepository.save(
+        Review savedReview = reviewRepository.save(
                 Review.of(
                         request.getContext(),
                         request.getPoint(),
@@ -43,17 +44,16 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
         return ApiResponse.of(
                 ReviewSuccessCode.REVIEW_CREATED,
-                ReviewSaveResponse.of(
-                        SavedReview,
-                        product,
-                        user
+                ReviewResponse.from(
+                        savedReview,
+                        0L
                 )
         );
     }
 
     @Override
     @Transactional
-    public ApiResponse<ReviewSaveResponse> updateReview(ReviewSaveRequest request, Long reviewId, AuthUser authUser) {
+    public ApiResponse<ReviewResponse> updateReview(ReviewSaveRequest request, Long reviewId, AuthUser authUser) {
 
         Review review = reviewRepository.findByIdWithUserAndProduct(reviewId).orElseThrow(
                 () -> new GlobalException(ReviewErrorCode.REVIEW_NOT_FOUND)
@@ -67,10 +67,9 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
         return ApiResponse.of(
                 ReviewSuccessCode.REVIEW_UPDATED,
-                ReviewSaveResponse.of(
+                ReviewResponse.from(
                         review,
-                        review.getProduct(),
-                        review.getUser()
+                        0L
                 )
         );
     }
