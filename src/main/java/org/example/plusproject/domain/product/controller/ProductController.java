@@ -29,13 +29,15 @@ public class ProductController {
                 ApiResponse.of(ProductSuccessCode.PRODUCT_GET_SUCCESS, productResponse));
     }
 
-    // 인기 상품 조회(리뷰순)
+    // 인기 상품 조회 (sort 파라미터 추가)
     @GetMapping("/{productId}/related")
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getRelatedProductsByReview(
             @PathVariable Long productId,
+            @RequestParam(defaultValue = "review") String sort,
             @RequestParam(defaultValue = "5") int limit
     ) {
-        List<ProductResponse> relatedProducts = productQueryService.getRelatedProducts(productId, limit);
+        List<ProductResponse> relatedProducts =
+                productQueryService.getRelatedProducts(productId, sort, limit);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.of(ProductSuccessCode.PRODUCT_GET_SUCCESS, relatedProducts));

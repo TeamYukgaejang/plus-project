@@ -58,14 +58,15 @@ public class DummyDataInitializer implements ApplicationRunner {
                     "더미 상품명_" + i,                        // name
                     1000 + i,                               // price
                     "더미 설명_" + i,                         // content
-                    100 + i                                 // review_count
+                    100 + i,                                // review_count
+                    50 + i                                  // view_count
             });
 
             // 배치 크기 채워지면 실행
             if (i % batchSize == 0) {
                 jdbcTemplate.batchUpdate(
-                        "INSERT INTO products (category_id, name, price, content, review_count, created_at, updated_at) " +
-                                "VALUES (?, ?, ?, ?, ?, NOW(), NOW())",
+                        "INSERT INTO products (category_id, name, price, content, review_count, view_count, created_at, updated_at) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())",
                         batch
                 );
                 batch.clear();
@@ -74,8 +75,8 @@ public class DummyDataInitializer implements ApplicationRunner {
 
         if (!batch.isEmpty()) {
             jdbcTemplate.batchUpdate(
-                    "INSERT INTO products (category_id, name, price, content, review_count, created_at, updated_at) " +
-                            "VALUES (?, ?, ?, ?, ?, NOW(), NOW())",
+                    "INSERT INTO products (category_id, name, price, content, review_count, view_count, created_at, updated_at) " +
+                            "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())",
                     batch
             );
         }
