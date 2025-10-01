@@ -35,21 +35,25 @@ public class Product extends BaseRemovableEntity {
 
     private int reviewCount;
 
+    @Column(nullable = false)
+    private int viewCount;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviews = new ArrayList<>();
 
     @Builder
-    private Product(String name, int price, String content, int reviewCount, Category category) {
+    private Product(String name, int price, String content, int reviewCount, int viewCount, Category category) {
         this.name = name;
         this.content = content;
         this.price = price;
         this.reviewCount = reviewCount;
+        this.viewCount = viewCount;
         this.category = category;
     }
 
-    // reviewCount를 0으로 초기화
+    // reviewCount와 viewCount를 0으로 초기화
     public static Product of(String name, int price, String content, Category category) {
-        return new Product(name, price, content, 0, category);
+        return new Product(name, price, content, 0, 0, category);
     }
 
     public void update(String name, int price, String content, Category category) {
@@ -57,5 +61,9 @@ public class Product extends BaseRemovableEntity {
         this.price = price;
         this.content = content;
         this.category = category;
+    }
+
+    public void increaseViewCount() {
+        this.viewCount++;
     }
 }
