@@ -75,7 +75,7 @@ public class DummyDataInitializer implements ApplicationRunner {
 
         if (!batch.isEmpty()) {
             jdbcTemplate.batchUpdate(
-                    "INSERT INTO products (category_id, name, price, content, review_count, view_count , created_at, updated_at) " +
+                    "INSERT INTO products (category_id, name, price, content, review_count, view_count, created_at, updated_at) " +
                             "VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())",
                     batch
             );
