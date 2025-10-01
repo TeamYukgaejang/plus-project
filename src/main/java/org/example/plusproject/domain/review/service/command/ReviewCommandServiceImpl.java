@@ -7,21 +7,19 @@ import org.example.plusproject.domain.like.service.query.LikeQueryServiceImpl;
 import org.example.plusproject.domain.product.entity.Product;
 import org.example.plusproject.domain.product.exception.ProductErrorCode;
 import org.example.plusproject.domain.product.repository.ProductRepository;
-import org.example.plusproject.domain.product.service.query.ProductQueryServiceImpl;
 import org.example.plusproject.domain.review.consts.ReviewErrorCode;
 import org.example.plusproject.domain.review.consts.ReviewSuccessCode;
 import org.example.plusproject.domain.review.dto.request.ReviewSaveRequest;
 import org.example.plusproject.domain.review.dto.response.ReviewResponse;
-import org.example.plusproject.domain.review.dto.response.ReviewSaveResponse;
 import org.example.plusproject.domain.review.entity.Review;
 import org.example.plusproject.domain.review.repository.ReviewRepository;
 import org.example.plusproject.domain.user.dto.security.AuthUser;
 import org.example.plusproject.domain.user.entity.User;
 import org.example.plusproject.domain.user.service.query.UserQueryServiceImpl;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Controller
+@Service
 @RequiredArgsConstructor
 public class ReviewCommandServiceImpl implements ReviewCommandService {
 

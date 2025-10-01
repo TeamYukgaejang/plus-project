@@ -19,7 +19,8 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Optional<Review> findByIdWithUserAndProduct(Long reviewId);
 
     @EntityGraph(attributePaths = {"product","user"})
-    Page<Review> findByProductIdAndDeletedAtIsNotNullOrderByUpdatedAtDesc(Long productId, Pageable pageable);
+    Page<Review> findByProductIdAndDeletedAtIsNullOrderByUpdatedAtDesc(Long productId, Pageable pageable);
 
+    @Query("SELECT AVG(r.point) FROM Review r WHERE r.product.id = :productId")
     Double findAvgPointByProductId(@Param("productId") Long productId);
 }
