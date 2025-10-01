@@ -1,5 +1,6 @@
 package org.example.plusproject.domain.search.service.queryservice;
 
+import org.example.plusproject.domain.category.entity.Category;
 import org.example.plusproject.domain.product.entity.Product;
 import org.example.plusproject.domain.product.repository.ProductRepository;
 import org.example.plusproject.domain.search.dto.response.ProductSearchResponse;
@@ -48,7 +49,8 @@ class SearchQueryServiceTest {
     void 상품명이_포함된_검색결과_반환() {
         String keyword = "사료";
         PageRequest pageable = PageRequest.of(0, 10);
-        Product product = Product.of("고양이 사료", 10000, "맛있는 사료", 1L);
+        Category category = Category.of("사료", "반려동물 사료");
+        Product product = Product.of("고양이 사료", 10000, "맛있는 사료", category);
         Page<Product> page = new PageImpl<>(List.of(product), pageable, 1);
 
         given(productRepository.findByNameContaining(keyword, pageable)).willReturn(page);
