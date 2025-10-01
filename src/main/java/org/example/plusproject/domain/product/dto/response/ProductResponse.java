@@ -21,6 +21,7 @@ public class ProductResponse {
     private String content;
     private Long categoryId;
     private int reviewCount;
+    private int viewCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
@@ -33,6 +34,7 @@ public class ProductResponse {
                 .content(product.getContent())
                 .categoryId(product.getCategory().getId())
                 .reviewCount(product.getReviewCount())
+                .viewCount(product.getViewCount())
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())
                 .deletedAt(product.getDeletedAt())
