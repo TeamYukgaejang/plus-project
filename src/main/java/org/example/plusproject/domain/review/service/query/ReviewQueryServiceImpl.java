@@ -30,7 +30,7 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
     @Override
     @Transactional(readOnly = true)
     public ApiResponse<ReviewPageResponse> getPageReview(int page, int size, Long productId) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, size);
 
         Page<Review> reviews = reviewRepository
                 .findByProductIdAndDeletedAtIsNotNullOrderByUpdatedAtDesc(productId, pageable);
