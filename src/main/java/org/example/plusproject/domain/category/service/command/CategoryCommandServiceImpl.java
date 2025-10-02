@@ -1,0 +1,60 @@
+package org.example.plusproject.domain.category.service.command;
+
+import lombok.RequiredArgsConstructor;
+import org.example.plusproject.domain.category.dto.request.CategoryCreateRequest;
+import org.example.plusproject.domain.category.dto.request.CategoryUpdateRequest;
+import org.example.plusproject.domain.category.dto.response.CategoryResponse;
+import org.example.plusproject.domain.category.entity.Category;
+import org.example.plusproject.domain.category.exception.CategoryErrorCode;
+import org.example.plusproject.domain.category.exception.CategoryException;
+import org.example.plusproject.domain.category.repository.CategoryRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class CategoryCommandServiceImpl implements CategoryCommandService {
+
+    private final CategoryRepository categoryRepository;
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public CategoryResponse createCategory(CategoryCreateRequest request) {
+
+        if (categoryRepository.existsByNameAndDeletedAtIsNull(request.getName())) {
+            throw new CategoryException(CategoryErrorCode.CATEGORY_NAME_DUPLICATED);
+        }
+
+        Category savedCategory = categoryRepository.save(
+                Category.of(request.getName(), request.getDescription())
+        );
+
+        return CategoryResponse.from(savedCategory);
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public CategoryResponse updateCategory(Long id, CategoryUpdateRequest request) {
+
+        Category category = categoryRepository.findByIdAndDeletedAtIsNullOrElseThrow(id);
+
+        if (categoryRepository.existsByNameAndDeletedAtIsNullAndIdNot(request.getName(), id)) {
+            throw new CategoryException(CategoryErrorCode.CATEGORY_NAME_DUPLICATED);
+        }
+
+        category.update(request.getName(), request.getDescription());
+
+        return CategoryResponse.from(category);
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteCategory(Long id) {
+
+        Category category = categoryRepository.findByIdAndDeletedAtIsNullOrElseThrow(id);
+
+        category.delete();
+    }
+}

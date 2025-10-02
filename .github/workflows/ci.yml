@@ -22,4 +22,6 @@ jobs:
         run: chmod +x gradlew   # :흰색_확인_표시: 실행 권한 부여
         
       - name: Run tests with coverage check
+        env: 
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
         run: ./gradlew clean check -Dspring.profiles.active=test
