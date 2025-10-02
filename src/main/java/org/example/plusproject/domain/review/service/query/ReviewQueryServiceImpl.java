@@ -33,7 +33,7 @@ public class ReviewQueryServiceImpl implements ReviewQueryService {
         Pageable pageable = PageRequest.of(page > 0 ? page - 1 : 0, size);
 
         Page<Review> reviews = reviewRepository
-                .findByProductIdAndDeletedAtIsNotNullOrderByUpdatedAtDesc(productId, pageable);
+                .findByProductIdAndDeletedAtIsNullOrderByUpdatedAtDesc(productId, pageable);
 
         Page<ReviewResponse> pageResponse = reviews.map(review -> {
             Long likeCount = likeService.getLikeCount(review.getId());
