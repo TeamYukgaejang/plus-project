@@ -3,12 +3,8 @@ package org.example.plusproject.domain.review.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.plusproject.common.entity.BaseRemovableEntity;
-import org.example.plusproject.domain.like.entity.Like;
 import org.example.plusproject.domain.product.entity.Product;
 import org.example.plusproject.domain.user.entity.User;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -32,9 +28,6 @@ public class Review extends BaseRemovableEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
-
-    @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Like> likes = new ArrayList<>();
 
     @Builder
     private Review(String content, int point, User user, Product product) {
