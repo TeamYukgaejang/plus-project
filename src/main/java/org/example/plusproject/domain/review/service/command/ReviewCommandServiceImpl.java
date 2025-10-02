@@ -3,6 +3,7 @@ package org.example.plusproject.domain.review.service.command;
 import lombok.RequiredArgsConstructor;
 import org.example.plusproject.common.dto.response.ApiResponse;
 import org.example.plusproject.common.exception.GlobalException;
+import org.example.plusproject.domain.like.repository.LikeRepository;
 import org.example.plusproject.domain.like.service.query.LikeQueryServiceImpl;
 import org.example.plusproject.domain.product.entity.Product;
 import org.example.plusproject.domain.product.exception.ProductErrorCode;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewCommandServiceImpl implements ReviewCommandService {
 
     private final ReviewRepository reviewRepository;
+    private final LikeRepository likeRepository;
     private final LikeQueryServiceImpl likeService;
     private final UserQueryServiceImpl userService;
     private final ProductRepository  productRepository;
@@ -88,6 +90,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
             throw new GlobalException(ReviewErrorCode.REVIEW_FORBIDDEN);
         }
 
+        likeRepository.deleteAllByReview(review);
         review.delete();
 
         return ApiResponse.of(ReviewSuccessCode.REVIEW_DELETED, null);
